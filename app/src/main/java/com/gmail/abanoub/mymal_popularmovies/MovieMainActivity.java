@@ -1,5 +1,6 @@
 package com.gmail.abanoub.mymal_popularmovies;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -8,14 +9,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 
+import com.gmail.abanoub.mymal_popularmovies.setting.SettingActivity;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MovieMainActivity extends AppCompatActivity implements MovieMainActivityFragment.IActivityFragmentCallBack {
 
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
     private boolean largeScreen ;
 
-    @BindView(R.id.toolbar) Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +46,7 @@ public class MovieMainActivity extends AppCompatActivity implements MovieMainAct
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
+            startActivity(new Intent(this, SettingActivity.class));
             return true;
         }
 

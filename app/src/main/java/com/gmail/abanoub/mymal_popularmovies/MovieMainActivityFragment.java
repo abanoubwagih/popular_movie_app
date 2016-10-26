@@ -22,14 +22,16 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnItemClick;
 
 public class MovieMainActivityFragment extends Fragment {
 
     public static final String LOG_TAG = MovieMainActivityFragment.class.getSimpleName();
     public IActivityFragmentCallBack iActivityFragmentCallBack;
-    //    @BindView(R.id.grid_movies_list)
-//    GridView gridView;
+    @BindView(R.id.grid_movies_list)
+    GridView gridView;
 
     private MoviesArrayAdapter moviesArrayAdapter;
 
@@ -53,8 +55,8 @@ public class MovieMainActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.fragment_movie_main, container, false);
-        moviesArrayAdapter = new MoviesArrayAdapter(getActivity(),R.layout.list_item_layout, new ArrayList<FetchedMoviesList.Movie>());
-        GridView gridView = (GridView) root.findViewById(R.id.grid_movies_list);
+        ButterKnife.bind(this, root);
+        moviesArrayAdapter = new MoviesArrayAdapter(getActivity(), R.layout.list_item_layout, new ArrayList<FetchedMoviesList.Movie>());
         gridView.setAdapter(moviesArrayAdapter);
 
         return root;
