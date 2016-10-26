@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="BASE_URL_FETCH_POSTER">http://image.tmdb.org/t/p/w185/</string>
+    <string name="BASE_URL_FETCH_List_MOVIES">http://api.themoviedb.org/3/movie/</string>
+    <string name="BASE_URL_FETCH_MOVIE_REVIEW">http://api.themoviedb.org/3/movie/%d/reviews</string>
+    <string name="BASE_URL_FETCH_MOVIE_TRAILERS">http://api.themoviedb.org/3/movie/%d/videos</string>
+</resources>
