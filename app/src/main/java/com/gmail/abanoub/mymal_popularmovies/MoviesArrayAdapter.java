@@ -55,7 +55,7 @@ public class MoviesArrayAdapter extends ArrayAdapter<FetchedMoviesList.Movie> {
 
             LayoutInflater inflater =
                     (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.list_item_layout, null);
+            convertView = inflater.inflate(R.layout.list_item_movie, null);
             holder = new ViewHolder(convertView);
             convertView.setTag(holder);
         }

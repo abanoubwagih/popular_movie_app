@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_margin="1dp">
 
     <ImageView
@@ -11,8 +11,8 @@
         android:layout_width="fill_parent"
         android:layout_height="250dp"
         android:contentDescription="@string/movie_photo"
-        android:scaleType="fitXY"
         android:minHeight="200dp"
+        android:scaleType="fitXY"
         app:srcCompat="@android:color/darker_gray" />
 
     <TextView
@@ -23,7 +23,7 @@
         android:background="#55000000"
         android:gravity="center"
         android:padding="10dp"
-        tools:text="Movie Title PlaceHolder"
         android:textColor="@android:color/white"
-        android:textSize="15sp" />
+        android:textSize="15sp"
+        tools:text="Movie Title PlaceHolder" />
 </RelativeLayout>

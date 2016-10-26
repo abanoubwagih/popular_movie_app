@@ -4,8 +4,7 @@
     android:id="@+id/content_movie_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.gmail.abanoub.mymal_popularmovies.MovieMainActivityFragment"
-    tools:showIn="@layout/activity_movie_main">
+    tools:context="com.gmail.abanoub.mymal_popularmovies.MovieMainActivityFragment">
 
     <GridView
         android:id="@+id/grid_movies_list"
