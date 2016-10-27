@@ -38,11 +38,7 @@ public class TrailerRecyclerAdapter extends RecyclerView.Adapter<TrailerRecycler
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
 
-        /**
-         * TODO FIND PATH OF TRAILER IMAGE
-         * http://img.youtube.com/vi/VIDEO_ID/0.jpg
-         *
-         */
+
         String thumbnailPaths = String.format(context.getString(R.string.BASE_URL_thumbnail_TRAILER), movieTrailers.get(position).getKey());
         Picasso.with(context).load(thumbnailPaths).into(holder.trailer_thumbnail_image);
 
@@ -75,9 +71,6 @@ public class TrailerRecyclerAdapter extends RecyclerView.Adapter<TrailerRecycler
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    /**
-                     * TODO OPEN VIDEO FOR WATCH
-                     */
 
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
