@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -29,6 +30,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -40,6 +42,7 @@ public class MovieDetailsFragment extends Fragment {
 
     public static final String ARG_MOVIE_PARAM = "movie_param";
     private static final String LOG_TAG = MovieDetailsFragment.class.getSimpleName();
+
     @BindView(R.id.movie_poster)
     ImageView movie_poster;
     @BindView(R.id.movie_title)
@@ -54,6 +57,8 @@ public class MovieDetailsFragment extends Fragment {
     RecyclerView review_recyclerView;
     @BindView(R.id.trailer_recyclerView)
     RecyclerView trailer_recyclerView;
+    @BindView(R.id.movie_favourite)
+    ImageView movie_favourite;
 
     private FetchedMoviesList.Movie movieParam;
     private ReviewRecyclerAdapter reviewRecyclerAdapter;
@@ -119,6 +124,17 @@ public class MovieDetailsFragment extends Fragment {
         movie_release_date.setText(movieParam.getRelease_date());
         movie_vote_average.setText(String.valueOf(movieParam.getVote_average()));
 
+        SharedPreferences sharedPreferences = getActivity().
+                getSharedPreferences(getString(R.string.share_preferences_movie_favourite), Context.MODE_PRIVATE);
+
+        boolean favourite = sharedPreferences.getBoolean(String.valueOf(movieParam.getId())
+                , getResources().getBoolean(R.bool.movie_not_favourite));
+
+        if (favourite) {
+            movie_favourite.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
+        } else {
+            movie_favourite.setImageDrawable(getResources().getDrawable(R.drawable.ic_not_favorite));
+        }
         /**
          * review recycler
          */
@@ -213,6 +229,31 @@ public class MovieDetailsFragment extends Fragment {
 
     }
 
+
+    @OnClick(R.id.movie_favourite)
+    public void handleMovieFavourite(View view) {
+
+        SharedPreferences sharedPreferences = getActivity().
+                getSharedPreferences(getString(R.string.share_preferences_movie_favourite), Context.MODE_PRIVATE);
+
+        boolean favourite = sharedPreferences.getBoolean(String.valueOf(movieParam.getId())
+                , getResources().getBoolean(R.bool.movie_not_favourite));
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        if (favourite) {
+            editor.putBoolean(String.valueOf(movieParam.getId()), getResources().getBoolean(R.bool.movie_not_favourite));
+            movie_favourite.setImageDrawable(getResources().getDrawable(R.drawable.ic_not_favorite));
+
+        } else {
+            editor.putBoolean(String.valueOf(movieParam.getId()), getResources().getBoolean(R.bool.movie_favourite));
+            movie_favourite.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
+
+        }
+
+        editor.apply();
+        editor.commit();
+
+    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {

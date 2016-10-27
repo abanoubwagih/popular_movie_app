@@ -4,6 +4,8 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#fa9d09</color>
     <color name="empty_text">#BDBDBD</color>
+    <color name="movieNotFavourite">#03000000</color>
+    <color name="movieFavourite">#f90307</color>
     <color name="movie_overview">@android:color/black</color>
     <color name="review_content">@android:color/black</color>
 </resources>
