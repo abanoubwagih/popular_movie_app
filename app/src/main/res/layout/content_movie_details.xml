@@ -6,6 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.gmail.abanoub.mymal_popularmovies.MovieDetailsActivity"
+    tools:context="com.gmail.abanoub.mymal_popularmovies.movie.details.MovieDetailsActivity"
     tools:showIn="@layout/activity_movie_details" />
 

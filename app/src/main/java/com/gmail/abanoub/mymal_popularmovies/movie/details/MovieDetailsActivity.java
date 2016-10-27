@@ -1,8 +1,10 @@
-package com.gmail.abanoub.mymal_popularmovies;
+package com.gmail.abanoub.mymal_popularmovies.movie.details;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+
+import com.gmail.abanoub.mymal_popularmovies.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -20,6 +22,8 @@ public class MovieDetailsActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        MovieDetailsFragment movieDetailsFragment = MovieDetailsFragment.newInstance(getIntent());
+        getFragmentManager().beginTransaction().replace(R.id.fragment_details, movieDetailsFragment).commit();
 
     }
 

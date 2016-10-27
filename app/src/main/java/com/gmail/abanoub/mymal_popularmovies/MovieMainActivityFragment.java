@@ -1,5 +1,6 @@
 package com.gmail.abanoub.mymal_popularmovies;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -30,11 +31,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MovieMainActivityFragment extends Fragment {
 
-    public static final String LOG_TAG = MovieMainActivityFragment.class.getSimpleName();
-    public IActivityFragmentCallBack iActivityFragmentCallBack;
+    private static final String LOG_TAG = MovieMainActivityFragment.class.getSimpleName();
     @BindView(R.id.grid_movies_list)
     GridView gridView;
-
+    private IActivityFragmentCallBack iActivityFragmentCallBack;
+    private Context context;
     private MoviesArrayAdapter moviesArrayAdapter;
 
     public MovieMainActivityFragment() {
@@ -42,15 +43,38 @@ public class MovieMainActivityFragment extends Fragment {
 
     @OnItemClick(R.id.grid_movies_list)
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        iActivityFragmentCallBack.onSelectedItemFromGrid(parent, view, position, id);
+
+
+        iActivityFragmentCallBack.onSelectedItemFromGrid(moviesArrayAdapter.getItem(position), position, id);
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        onAttachStarted(context);
+    }
 
-        if (!(context instanceof IActivityFragmentCallBack)) throw new AssertionError();
-        iActivityFragmentCallBack = (IActivityFragmentCallBack) context;
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        onAttachStarted(activity);
+    }
+
+    private void onAttachStarted(Context context) {
+        this.context = context;
+        if (context instanceof MovieMainActivityFragment.IActivityFragmentCallBack) {
+
+            iActivityFragmentCallBack = (IActivityFragmentCallBack) context;
+        } else {
+            Log.e(LOG_TAG, "not instance of interface ");
+        }
+    }
+
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        iActivityFragmentCallBack = null;
     }
 
     @Override
@@ -107,7 +131,7 @@ public class MovieMainActivityFragment extends Fragment {
 
 
     public interface IActivityFragmentCallBack {
-        void onSelectedItemFromGrid(AdapterView<?> parent, View view, int position, long id);
+        void onSelectedItemFromGrid(FetchedMoviesList.Movie movie, int position, long id);
     }
 
 }

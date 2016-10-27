@@ -2,6 +2,11 @@
 <resources>
     <string name="BASE_URL_FETCH_POSTER">http://image.tmdb.org/t/p/w185/</string>
     <string name="BASE_URL_FETCH_List_MOVIES">http://api.themoviedb.org/3/movie/</string>
-    <string name="BASE_URL_FETCH_MOVIE_REVIEW">http://api.themoviedb.org/3/movie/%d/reviews</string>
-    <string name="BASE_URL_FETCH_MOVIE_TRAILERS">http://api.themoviedb.org/3/movie/%d/videos</string>
+    <!--http://api.themoviedb.org/3/movie/popular?api_key=2900c1804e7ec7ef483309a5021aa377-->
+    <string name="BASE_URL_FETCH_MOVIE_REVIEWS">http://api.themoviedb.org/3/movie/</string>
+    <!--http://api.themoviedb.org/3/movie/343611/reviews?api_key=2900c1804e7ec7ef483309a5021aa377-->
+    <string name="BASE_URL_FETCH_MOVIE_TRAILERS">http://api.themoviedb.org/3/movie/</string>
+
+    <string name="BASE_URL_WATCH_TRAILER">http://www.youtube.com/watch?v=</string>
+    <string name="BASE_URL_thumbnail_TRAILER">http://img.youtube.com/vi/%s/0.jpg</string>
 </resources>

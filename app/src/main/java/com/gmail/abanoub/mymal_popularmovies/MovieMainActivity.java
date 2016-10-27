@@ -6,9 +6,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 
+import com.gmail.abanoub.mymal_popularmovies.data.fetched.FetchedMoviesList;
+import com.gmail.abanoub.mymal_popularmovies.movie.details.MovieDetailsActivity;
+import com.gmail.abanoub.mymal_popularmovies.movie.details.MovieDetailsFragment;
 import com.gmail.abanoub.mymal_popularmovies.setting.SettingActivity;
 
 import butterknife.BindView;
@@ -54,7 +55,19 @@ public class MovieMainActivity extends AppCompatActivity implements MovieMainAct
     }
 
     @Override
-    public void onSelectedItemFromGrid(AdapterView<?> parent, View view, int position, long id) {
+    public void onSelectedItemFromGrid(FetchedMoviesList.Movie movie, int position, long id) {
 
+        if (largeScreen) {
+            MovieDetailsFragment movieDetailsFragment = MovieDetailsFragment.newInstance(movie);
+            getFragmentManager().beginTransaction().replace(R.id.fragment_details, movieDetailsFragment).commit();
+
+        } else {
+
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(MovieDetailsFragment.ARG_MOVIE_PARAM, movie);
+            Intent intent = new Intent(this, MovieDetailsActivity.class);
+            intent.putExtras(bundle);
+            startActivity(intent);
+        }
     }
 }

@@ -9,34 +9,32 @@ import java.util.List;
  * Created by Abanoub on 24/10/2016.
  */
 
-public class FetchMovieReview implements Parcelable{
+public class FetchMovieReviews implements Parcelable {
 
+    public static final Creator<FetchMovieReviews> CREATOR = new Creator<FetchMovieReviews>() {
+        @Override
+        public FetchMovieReviews createFromParcel(Parcel in) {
+            return new FetchMovieReviews(in);
+        }
+
+        @Override
+        public FetchMovieReviews[] newArray(int size) {
+            return new FetchMovieReviews[size];
+        }
+    };
     private int id;
     private int page;
     private int total_pages;
     private int total_results;
+    private List<MovieReviews> results;
 
-    private List<MovieReview> results;
-
-    protected FetchMovieReview(Parcel in) {
+    protected FetchMovieReviews(Parcel in) {
         id = in.readInt();
         page = in.readInt();
         total_pages = in.readInt();
         total_results = in.readInt();
-        results = in.createTypedArrayList(MovieReview.CREATOR);
+        results = in.createTypedArrayList(MovieReviews.CREATOR);
     }
-
-    public static final Creator<FetchMovieReview> CREATOR = new Creator<FetchMovieReview>() {
-        @Override
-        public FetchMovieReview createFromParcel(Parcel in) {
-            return new FetchMovieReview(in);
-        }
-
-        @Override
-        public FetchMovieReview[] newArray(int size) {
-            return new FetchMovieReview[size];
-        }
-    };
 
     public int getId() {
         return id;
@@ -70,11 +68,11 @@ public class FetchMovieReview implements Parcelable{
         this.total_results = total_results;
     }
 
-    public List<MovieReview> getResults() {
+    public List<MovieReviews> getResults() {
         return results;
     }
 
-    public void setResults(List<MovieReview> results) {
+    public void setResults(List<MovieReviews> results) {
         this.results = results;
     }
 
@@ -92,30 +90,29 @@ public class FetchMovieReview implements Parcelable{
         parcel.writeTypedList(results);
     }
 
-    public static class MovieReview implements Parcelable{
+    public static class MovieReviews implements Parcelable {
+        public static final Creator<MovieReviews> CREATOR = new Creator<MovieReviews>() {
+            @Override
+            public MovieReviews createFromParcel(Parcel in) {
+                return new MovieReviews(in);
+            }
+
+            @Override
+            public MovieReviews[] newArray(int size) {
+                return new MovieReviews[size];
+            }
+        };
         private String id;
         private String author;
         private String content;
         private String url;
 
-        protected MovieReview(Parcel in) {
+        protected MovieReviews(Parcel in) {
             id = in.readString();
             author = in.readString();
             content = in.readString();
             url = in.readString();
         }
-
-        public static final Creator<MovieReview> CREATOR = new Creator<MovieReview>() {
-            @Override
-            public MovieReview createFromParcel(Parcel in) {
-                return new MovieReview(in);
-            }
-
-            @Override
-            public MovieReview[] newArray(int size) {
-                return new MovieReview[size];
-            }
-        };
 
         public String getId() {
             return id;

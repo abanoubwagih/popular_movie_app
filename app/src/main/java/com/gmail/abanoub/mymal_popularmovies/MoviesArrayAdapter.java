@@ -46,7 +46,6 @@ public class MoviesArrayAdapter extends ArrayAdapter<FetchedMoviesList.Movie> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         FetchedMoviesList.Movie movie = movieList.get(position);
-        ButterKnife.bind(this,convertView);
         ViewHolder holder;
 
         if (convertView != null) {

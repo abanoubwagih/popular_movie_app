@@ -10,9 +10,11 @@
     <string name="sort_rate" translatable="false">top_rated</string>
     <string name="pref_how_sorting_movies" translatable="false">Sorting Movies</string>
     <string name="pref_sort_movies_list" translatable="false">sortMoviesList</string>
-    <string name="title_activity_details">DetailsActivity</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_details">DetailsActivity</string>
+    <string name="_10" translatable="false">/10</string>
+    <string name="reviews" translatable="false">Reviews</string>
+
+    <string name="setting_share">Share</string>
 
 </resources>
