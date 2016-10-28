@@ -19,7 +19,7 @@ public class MovieMainActivity extends AppCompatActivity implements MovieMainAct
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    private boolean largeScreen ;
+    private boolean largeScreen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,10 +27,10 @@ public class MovieMainActivity extends AppCompatActivity implements MovieMainAct
         setContentView(R.layout.activity_movie_main);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
-
+        setTitle(R.string.app_name);
         largeScreen = findViewById(R.id.fragment_details) != null;
         MovieMainActivityFragment mainActivityFragment = new MovieMainActivityFragment();
-        getFragmentManager().beginTransaction().replace(R.id.fragment_main,mainActivityFragment).commit();
+        getFragmentManager().beginTransaction().replace(R.id.fragment_main, mainActivityFragment).commit();
 
     }
 

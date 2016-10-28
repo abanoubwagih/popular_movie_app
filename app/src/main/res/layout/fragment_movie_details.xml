@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    tools:ignore="RtlHardcoded">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -28,7 +29,8 @@
                 android:layout_marginRight="@dimen/movie_poster_padding_right"
                 android:layout_weight="3"
                 android:scaleType="fitXY"
-                tools:src="@color/empty_text" />
+                tools:ignore="ContentDescription,RtlHardcoded"
+                tools:src="@color/placeHolder" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -44,7 +46,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="right"
                     android:layout_margin="@dimen/detail_title_bottom_margin"
-                    android:textColor="@color/colorPrimary"
+                    android:textColor="@color/colorAccent"
                     android:textStyle="bold"
                     tools:text="Title" />
 
@@ -55,7 +57,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="right"
                     android:layout_margin="@dimen/detail_title_bottom_margin"
-                    android:textColor="@color/movie_overview"
+                    android:textColor="@color/primary_text"
                     android:textIsSelectable="true"
                     android:textStyle="italic"
                     tools:text="21/11/2016" />
@@ -72,9 +74,10 @@
                         style="?android:attr/textAppearanceLarge"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center"
                         android:layout_marginBottom="@dimen/detail_title_bottom_margin"
                         android:layout_marginLeft="@dimen/detail_title_left_padding"
-                        android:textColor="@color/colorAccent"
+                        android:textColor="@color/colorPrimary"
                         android:textIsSelectable="true"
                         android:textStyle="bold|italic"
                         tools:text="7" />
@@ -83,17 +86,19 @@
                         style="?android:attr/textAppearanceSmall"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center"
                         android:layout_marginBottom="@dimen/detail_title_bottom_margin"
                         android:text="@string/_10"
                         android:textIsSelectable="true" />
 
                     <ImageView
                         android:id="@+id/movie_favourite"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:tint="@color/colorAccent"
-                        app:srcCompat="@drawable/ic_not_favorite" />
+                        android:tint="@color/colorPrimary"
+                        app:srcCompat="@drawable/ic_not_favorite"
+                        tools:ignore="ContentDescription" />
 
 
                 </LinearLayout>
@@ -112,6 +117,7 @@
                 android:layout_gravity="right|center_vertical"
                 android:layout_marginLeft="66dp"
                 android:paddingTop="10dp"
+                android:textColor="@color/primary_text"
                 tools:text="Jack Reacher must uncover the truth behind a major government conspiracy in order to clear his name. On the run as a fugitive from the law, Reacher uncovers a potential secret from his past that could change his life forever." />
 
             <ImageView
@@ -122,7 +128,8 @@
                 android:minWidth="24dp"
                 android:padding="8dp"
                 android:src="@drawable/ic_edit"
-                android:tint="@color/colorPrimary" />
+                android:tint="@color/colorAccent"
+                tools:ignore="ContentDescription" />
         </FrameLayout>
 
         <android.support.v7.widget.RecyclerView
@@ -130,9 +137,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/trailer_list_item_top_margin"
-            android:background="@color/empty_text"
+            android:background="@color/icons"
             android:orientation="horizontal"
-            android:padding="16dp"
+            android:padding="4dp"
             app:layoutManager="LinearLayoutManager"
             tools:listitem="@layout/list_item_trailer" />
 
@@ -149,7 +156,7 @@
             android:id="@+id/review_recyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/empty_text"
+            android:background="@color/icons"
             android:padding="5dp"
             app:layoutManager="LinearLayoutManager"
             tools:listitem="@layout/list_item_review" />
