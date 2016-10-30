@@ -1,14 +1,10 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="150dp"
-    android:layout_marginTop="8dp"
-    android:elevation="4dp"
-
+    android:layout_marginBottom="1dp"
     android:paddingBottom="@dimen/review_vertical_padding"
-    android:paddingTop="@dimen/review_vertical_padding"
-    app:cardCornerRadius="10dp">
+    android:paddingTop="@dimen/review_vertical_padding">
 
     <TextView
         android:id="@+id/review_author"

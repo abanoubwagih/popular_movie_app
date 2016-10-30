@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="BASE_URL_FETCH_POSTER">http://image.tmdb.org/t/p/w185/</string>
+    <string name="BASE_URL_FETCH_BACKDROP">http://image.tmdb.org/t/p/w780/</string>
     <string name="BASE_URL_FETCH_List_MOVIES">http://api.themoviedb.org/3/movie/</string>
     <!--http://api.themoviedb.org/3/movie/popular?api_key=2900c1804e7ec7ef483309a5021aa377-->
     <string name="BASE_URL_FETCH_MOVIE_REVIEWS">http://api.themoviedb.org/3/movie/</string>

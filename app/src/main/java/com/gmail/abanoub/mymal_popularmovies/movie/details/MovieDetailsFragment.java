@@ -105,7 +105,7 @@ public class MovieDetailsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             movieParam = getArguments().getParcelable(ARG_MOVIE_PARAM);
-            getActivity().setTitle(movieParam.getTitle());
+
         }
 
 
@@ -115,6 +115,14 @@ public class MovieDetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        getActivity().setTitle(movieParam.getTitle());
+        if (getActivity().findViewById(R.id.movie_backdrop_image) != null) {
+
+            ImageView backdrop = (ImageView) getActivity().findViewById(R.id.movie_backdrop_image);
+            String imagePathdrob = context.getString(R.string.BASE_URL_FETCH_BACKDROP) + movieParam.getPoster_path();
+            Picasso.with(getActivity()).load(imagePathdrob).into(backdrop);
+        }
+
         View root = inflater.inflate(R.layout.fragment_movie_details, container, false);
         ButterKnife.bind(this, root);
         String imagePath = context.getString(R.string.BASE_URL_FETCH_POSTER) + movieParam.getPoster_path();

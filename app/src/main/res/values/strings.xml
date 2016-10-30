@@ -17,5 +17,9 @@
     <string name="setting_share">Share</string>
     <string name="share_preferences_movie_favourite">movie_favourite</string>
 
-    <string name="num_of_column">auto_fit</string>
+    <string name="num_of_column" translatable="false">auto_fit</string>
+    <string name="save_instance_movieParam" translatable="false">movieParam</string>
+    <string name="save_instance_movieReviews" translatable="false">movieReviews</string>
+    <string name="save_instance_movieTrailers" translatable="false">movieTrailers</string>
+    <string name="save_instance_bundle">bundleFragment</string>
 </resources>
