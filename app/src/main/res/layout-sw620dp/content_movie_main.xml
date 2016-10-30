@@ -1,24 +1,23 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    android:baselineAligned="false"
     android:orientation="horizontal"
-    android:baselineAligned="false">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/fragment_main"
         android:layout_width="0dp"
-        android:layout_weight="1"
         android:layout_height="match_parent"
+        android:layout_weight="1"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <FrameLayout
         android:id="@+id/fragment_details"
-        android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="match_parent"
+        android:layout_weight="1"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     </FrameLayout>

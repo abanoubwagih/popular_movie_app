@@ -3,13 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="150dp"
-    android:layout_marginBottom="4dp"
-    android:layout_marginLeft="2dp"
-    android:layout_marginRight="2dp"
-    android:layout_marginTop="4dp"
+    android:layout_marginTop="8dp"
+    android:elevation="4dp"
+
     android:paddingBottom="@dimen/review_vertical_padding"
-    android:paddingEnd="@dimen/review_horizontal_padding"
-    android:paddingStart="@dimen/review_horizontal_padding"
     android:paddingTop="@dimen/review_vertical_padding"
     app:cardCornerRadius="10dp">
 
@@ -17,7 +14,7 @@
         android:id="@+id/review_author"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="20dp"
+        android:padding="8dp"
         android:textAppearance="?android:textAppearanceLarge"
         android:textColor="@color/primary_text"
         android:textStyle="bold"
@@ -28,10 +25,9 @@
         android:id="@+id/review_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="32dp"
         android:ellipsize="end"
-        android:maxLines="5"
-        android:padding="20dp"
+        android:padding="10dp"
         android:textAppearance="?android:textAppearanceSmall"
         android:textColor="@color/secondary_text"
         tools:text="I was a supporter of the first Jack Reacher film, having never developed a literary attachment to the eponymous hero and thus being perfectly happy to see him misinterpreted (apparently) by the diminutive Tom Cruise. But this sequel, adapted from another of Lee Child's bestselling books, has the misfortune to bear a title which may provide its epitaph. Reacher does come back, on a similar mission to last time: that is, to clear someone's name and run around (he does a lot of running) dodging those who would rather see him hand-cuffed and out of their ill-intentioned way." />

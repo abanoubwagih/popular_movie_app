@@ -17,4 +17,5 @@
     <string name="setting_share">Share</string>
     <string name="share_preferences_movie_favourite">movie_favourite</string>
 
+    <string name="num_of_column">auto_fit</string>
 </resources>
