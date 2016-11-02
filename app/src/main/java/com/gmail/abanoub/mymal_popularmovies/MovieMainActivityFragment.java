@@ -17,7 +17,6 @@ import com.gmail.abanoub.mymal_popularmovies.data.fetched.FetchedMoviesList;
 import com.gmail.abanoub.mymal_popularmovies.data.fetched.IMoviesServices;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,8 +36,11 @@ public class MovieMainActivityFragment extends Fragment {
     private IActivityFragmentCallBack iActivityFragmentCallBack;
     private Context context;
     private MoviesArrayAdapter moviesArrayAdapter;
+    private ArrayList<FetchedMoviesList.Movie> moviesArrayList;
+    private int itemPositionIndex;
 
     public MovieMainActivityFragment() {
+        Log.d(LOG_TAG, "MovieMainActivityFragment");
     }
 
     @OnItemClick(R.id.grid_movies_list)
@@ -61,6 +63,8 @@ public class MovieMainActivityFragment extends Fragment {
     }
 
     private void onAttachStarted(Context context) {
+        Log.d(LOG_TAG, "onAttach");
+
         this.context = context;
         if (context instanceof MovieMainActivityFragment.IActivityFragmentCallBack) {
 
@@ -80,22 +84,19 @@ public class MovieMainActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
+        Log.d(LOG_TAG, "onCreateView");
         View root = inflater.inflate(R.layout.fragment_movie_main, container, false);
         ButterKnife.bind(this, root);
-        moviesArrayAdapter = new MoviesArrayAdapter(getActivity(), R.layout.list_item_movie, new ArrayList<FetchedMoviesList.Movie>());
+        moviesArrayAdapter = new MoviesArrayAdapter(getActivity(), R.layout.list_item_movie, moviesArrayList);
         gridView.setAdapter(moviesArrayAdapter);
-
+        if (itemPositionIndex != 0) gridView.setSelection(itemPositionIndex);
+        moviesArrayAdapter.notifyDataSetChanged();
         return root;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        updateMoviesList();
     }
 
     private void updateMoviesList() {
 
+        Log.d(LOG_TAG, "updateMoviesList");
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String SORT_TYPE = preferences.getString(getString(R.string.pref_sort_movies_list), getString(R.string.pref_sort_default));
 
@@ -112,12 +113,14 @@ public class MovieMainActivityFragment extends Fragment {
         moviesListCall.enqueue(new Callback<FetchedMoviesList>() {
             @Override
             public void onResponse(Call<FetchedMoviesList> call, Response<FetchedMoviesList> response) {
-                List<FetchedMoviesList.Movie> movies = response.body().getResults();
+                moviesArrayList = (ArrayList<FetchedMoviesList.Movie>) response.body().getResults();
 
-                if (movies != null) {
+                if (moviesArrayList != null) {
+
+                    Log.d(LOG_TAG, "update adapter");
 
                     moviesArrayAdapter.clear();
-                    moviesArrayAdapter.addAll(movies);
+                    moviesArrayAdapter.addAll(moviesArrayList);
                 }
             }
 
@@ -129,6 +132,37 @@ public class MovieMainActivityFragment extends Fragment {
 
     }
 
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.d(LOG_TAG, "onCreate");
+
+        if (savedInstanceState == null || !savedInstanceState.containsKey(getString(R.string.save_instance_moviesArrayList))) {
+            moviesArrayList = new ArrayList<>();
+            Log.d(LOG_TAG, "onCreateView no instansce ");
+            itemPositionIndex = 0;
+            updateMoviesList();
+
+
+        } else {
+            Log.d(LOG_TAG, "onCreateView with instance ");
+
+            moviesArrayList = savedInstanceState.getParcelableArrayList(getString(R.string.save_instance_moviesArrayList));
+            itemPositionIndex = savedInstanceState.getInt(getString(R.string.save_instance_itemPositionIndex));
+        }
+
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+
+        itemPositionIndex = gridView.getFirstVisiblePosition();
+        outState.putParcelableArrayList(getString(R.string.save_instance_moviesArrayList), moviesArrayList);
+        outState.putInt(getString(R.string.save_instance_itemPositionIndex), itemPositionIndex);
+        Log.d(LOG_TAG, "onSaveInstanceState");
+        super.onSaveInstanceState(outState);
+    }
 
     public interface IActivityFragmentCallBack {
         void onSelectedItemFromGrid(FetchedMoviesList.Movie movie, int position, long id);

@@ -26,7 +26,6 @@ import com.gmail.abanoub.mymal_popularmovies.data.fetched.IMoviesServices;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -64,8 +63,8 @@ public class MovieDetailsFragment extends Fragment {
     private ReviewRecyclerAdapter reviewRecyclerAdapter;
     private TrailerRecyclerAdapter trailerRecyclerAdapter;
     private Context context;
-    private List<FetchMovieReviews.MovieReviews> movieReviews;
-    private List<FetchMovieTrailers.MovieTrailer> movieTrailers;
+    private ArrayList<FetchMovieReviews.MovieReviews> movieReviews;
+    private ArrayList<FetchMovieTrailers.MovieTrailer> movieTrailers;
 
 
     public MovieDetailsFragment() {
@@ -103,9 +102,19 @@ public class MovieDetailsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            movieParam = getArguments().getParcelable(ARG_MOVIE_PARAM);
-
+        Log.d(LOG_TAG, "onCreate");
+        if (savedInstanceState == null || !savedInstanceState.containsKey(getString(R.string.save_instance_movieParam))) {
+            if (getArguments() != null) {
+                movieParam = getArguments().getParcelable(ARG_MOVIE_PARAM);
+                movieReviews = new ArrayList<>();
+                movieTrailers = new ArrayList<>();
+                updateMovieTrailer();
+                updateMovieReview();
+            }
+        } else {
+            movieParam = savedInstanceState.getParcelable(getString(R.string.save_instance_movieParam));
+            movieTrailers = savedInstanceState.getParcelableArrayList(getString(R.string.save_instance_movieTrailers));
+            movieReviews = savedInstanceState.getParcelableArrayList(getString(R.string.save_instance_movieReviews));
         }
 
 
@@ -115,6 +124,7 @@ public class MovieDetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        Log.d(LOG_TAG, "onCreateView");
         getActivity().setTitle(movieParam.getTitle());
         if (getActivity().findViewById(R.id.movie_backdrop_image) != null) {
 
@@ -131,7 +141,9 @@ public class MovieDetailsFragment extends Fragment {
         movie_overview.setText(movieParam.getOverview());
         movie_release_date.setText(movieParam.getRelease_date());
         movie_vote_average.setText(String.valueOf(movieParam.getVote_average()));
-
+        /**
+         *  favourite
+         */
         SharedPreferences sharedPreferences = getActivity().
                 getSharedPreferences(getString(R.string.share_preferences_movie_favourite), Context.MODE_PRIVATE);
 
@@ -146,7 +158,6 @@ public class MovieDetailsFragment extends Fragment {
         /**
          * review recycler
          */
-        movieReviews = new ArrayList<>();
         reviewRecyclerAdapter = new ReviewRecyclerAdapter(getActivity(), movieReviews);
         review_recyclerView.setAdapter(reviewRecyclerAdapter);
         review_recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
@@ -154,7 +165,6 @@ public class MovieDetailsFragment extends Fragment {
         /**
          * trailer recycler
          */
-        movieTrailers = new ArrayList<>();
         trailerRecyclerAdapter = new TrailerRecyclerAdapter(getActivity(), movieTrailers);
         trailer_recyclerView.setAdapter(trailerRecyclerAdapter);
         trailer_recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
@@ -166,8 +176,8 @@ public class MovieDetailsFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        updateMovieTrailer();
-        updateMovieReview();
+//        updateMovieTrailer();
+//        updateMovieReview();
     }
 
     private void updateMovieReview() {
@@ -184,7 +194,7 @@ public class MovieDetailsFragment extends Fragment {
             movieReviewCall.enqueue(new Callback<FetchMovieReviews>() {
                 @Override
                 public void onResponse(Call<FetchMovieReviews> call, Response<FetchMovieReviews> response) {
-                    movieReviews = response.body().getResults();
+                    movieReviews = (ArrayList<FetchMovieReviews.MovieReviews>) response.body().getResults();
                     if (movieReviews != null) {
                         reviewRecyclerAdapter.addAndClear(movieReviews);
                     }
@@ -217,7 +227,7 @@ public class MovieDetailsFragment extends Fragment {
             movieTrailersCall.enqueue(new Callback<FetchMovieTrailers>() {
                 @Override
                 public void onResponse(Call<FetchMovieTrailers> call, Response<FetchMovieTrailers> response) {
-                    movieTrailers = response.body().getResults();
+                    movieTrailers = (ArrayList<FetchMovieTrailers.MovieTrailer>) response.body().getResults();
 
                     if (movieTrailers != null) {
                         trailerRecyclerAdapter.addAndClear(movieTrailers);
@@ -236,7 +246,6 @@ public class MovieDetailsFragment extends Fragment {
         }
 
     }
-
 
     @OnClick(R.id.movie_favourite)
     public void handleMovieFavourite(View view) {
@@ -265,7 +274,10 @@ public class MovieDetailsFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-
+        Log.d(LOG_TAG, "onSaveInstanceState");
+        outState.putParcelable(getString(R.string.save_instance_movieParam), movieParam);
+        outState.putParcelableArrayList(getString(R.string.save_instance_movieTrailers), movieTrailers);
+        outState.putParcelableArrayList(getString(R.string.save_instance_movieReviews), movieReviews);
         super.onSaveInstanceState(outState);
     }
 }

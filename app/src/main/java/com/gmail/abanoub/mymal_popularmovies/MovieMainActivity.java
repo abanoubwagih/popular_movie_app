@@ -29,8 +29,12 @@ public class MovieMainActivity extends AppCompatActivity implements MovieMainAct
         setSupportActionBar(toolbar);
         setTitle(R.string.app_name);
         largeScreen = findViewById(R.id.fragment_details) != null;
-        MovieMainActivityFragment mainActivityFragment = new MovieMainActivityFragment();
-        getFragmentManager().beginTransaction().replace(R.id.fragment_main, mainActivityFragment).commit();
+        if (savedInstanceState == null) {
+            MovieMainActivityFragment mainActivityFragment = new MovieMainActivityFragment();
+            getFragmentManager().beginTransaction().add(R.id.fragment_main, mainActivityFragment).commit();
+        } else {
+
+        }
 
     }
 
@@ -70,4 +74,5 @@ public class MovieMainActivity extends AppCompatActivity implements MovieMainAct
             startActivity(intent);
         }
     }
+
 }

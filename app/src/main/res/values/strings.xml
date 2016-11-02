@@ -22,4 +22,6 @@
     <string name="save_instance_movieReviews" translatable="false">movieReviews</string>
     <string name="save_instance_movieTrailers" translatable="false">movieTrailers</string>
     <string name="save_instance_bundle">bundleFragment</string>
+    <string name="save_instance_moviesArrayList" translatable="false">save_instance_moviesArrayList</string>
+    <string name="save_instance_itemPositionIndex">save_instance_itemPositionIndex</string>
 </resources>
