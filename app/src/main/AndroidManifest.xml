@@ -35,6 +35,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.gmail.abanoub.mymal_popularmovies.MovieMainActivity" />
         </activity>
+
+        <provider
+            android:name=".data.provider.PopularMovieProvider"
+            android:authorities="com.gmail.abanoub.mymal_popularmovies"
+            android:exported="false" />
     </application>
 
 </manifest>

@@ -11,7 +11,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class MovieDbHelper extends SQLiteOpenHelper {
 
     public static final int MOVIE_DATABASE_VERSION = 1;
-    public static final String MOVIE_DATABASE_NAME = "movie_dabase.db";
+    public static final String MOVIE_DATABASE_NAME = "Popular_Movie_Database.db";
 
     public MovieDbHelper(Context context) {
         super(context, MOVIE_DATABASE_NAME, null, MOVIE_DATABASE_VERSION);
