@@ -16,12 +16,9 @@ import com.gmail.abanoub.mymal_popularmovies.data.provider.MoviesContract.Traile
 import static com.gmail.abanoub.mymal_popularmovies.data.provider.MoviesContract.AUTHORITY;
 
 
-/**
- * Created by Abanoub on 03/11/2016.
- */
-
 public class PopularMovieProvider extends ContentProvider {
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+    private static final String LOG_TAG = PopularMovieProvider.class.getSimpleName();
 
     static {
         uriMatcher.addURI(AUTHORITY, ReviewEntry.CONTENT_PROVIDER_URI_TABLE_PATTERN, ReviewEntry.CODE_TABLE);
@@ -51,18 +48,14 @@ public class PopularMovieProvider extends ContentProvider {
         SQLiteDatabase sqLiteDatabase = movieDbHelper.getReadableDatabase();
 
         int match = uriMatcher.match(uri);
+
+
         Cursor cursor;
         switch (match) {
-            case ReviewEntry.CODE_TABLE:
-                cursor = sqLiteDatabase.query(ReviewEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
-                break;
             case ReviewEntry.CODE_TABLE_ID:
                 selection = ReviewEntry.COLUMN_REVIEW_MOVIE_ID + " = ? ";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 cursor = sqLiteDatabase.query(ReviewEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
-                break;
-            case TrailerEntry.CODE_TABLE:
-                cursor = sqLiteDatabase.query(TrailerEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
             case TrailerEntry.CODE_TABLE_ID:
                 selection = TrailerEntry.COLUMN_TRAILER_MOVIE_ID + " = ? ";
@@ -95,6 +88,8 @@ public class PopularMovieProvider extends ContentProvider {
             default:
                 throw new IllegalArgumentException("cannot query. unknown uri " + uri);
         }
+
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
         return cursor;
     }
 
@@ -113,17 +108,18 @@ public class PopularMovieProvider extends ContentProvider {
 
         switch (match) {
             case ReviewEntry.CODE_TABLE:
-                id = sqLiteDatabase.insert(ReviewEntry.TABLE_NAME, null, contentValues);
+                id = sqLiteDatabase.insertWithOnConflict(ReviewEntry.TABLE_NAME, null, contentValues, SQLiteDatabase.CONFLICT_IGNORE);
                 break;
             case TrailerEntry.CODE_TABLE:
-                id = sqLiteDatabase.insert(TrailerEntry.TABLE_NAME, null, contentValues);
+                id = sqLiteDatabase.insertWithOnConflict(TrailerEntry.TABLE_NAME, null, contentValues, SQLiteDatabase.CONFLICT_IGNORE);
                 break;
             case MovieEntry.CODE_TABLE:
-                id = sqLiteDatabase.insert(MovieEntry.TABLE_NAME, null, contentValues);
+                id = sqLiteDatabase.insertWithOnConflict(MovieEntry.TABLE_NAME, null, contentValues, SQLiteDatabase.CONFLICT_IGNORE);
                 break;
             default:
                 throw new IllegalArgumentException("cannot query unknown uri " + uri);
         }
+        getContext().getContentResolver().notifyChange(uri, null);
         return ContentUris.withAppendedId(uri, id);
     }
 
@@ -159,6 +155,9 @@ public class PopularMovieProvider extends ContentProvider {
                 throw new IllegalArgumentException("cannot delete . unknown uri " + uri);
         }
 
+        if (id != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
         return id;
     }
 
@@ -177,6 +176,65 @@ public class PopularMovieProvider extends ContentProvider {
             default:
                 throw new IllegalArgumentException("cannot insert . unknown uri " + uri);
         }
+        if (id != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
         return id;
+    }
+
+    @Override
+    public int bulkInsert(Uri uri, ContentValues[] values) {
+        int match = uriMatcher.match(uri);
+        SQLiteDatabase sqLiteDatabase = movieDbHelper.getWritableDatabase();
+
+        int count = 0;
+        switch (match) {
+            case ReviewEntry.CODE_TABLE:
+                sqLiteDatabase.beginTransaction();
+
+                try {
+                    for (ContentValues value : values) {
+
+                        long _id = sqLiteDatabase.insertWithOnConflict(ReviewEntry.TABLE_NAME, null, value, SQLiteDatabase.CONFLICT_IGNORE);
+                        if (_id != -1) count++;
+                    }
+                    sqLiteDatabase.setTransactionSuccessful();
+                } finally {
+                    sqLiteDatabase.endTransaction();
+                }
+                break;
+            case TrailerEntry.CODE_TABLE:
+                sqLiteDatabase.beginTransaction();
+
+                try {
+                    for (ContentValues value : values) {
+
+                        long _id = sqLiteDatabase.insertWithOnConflict(TrailerEntry.TABLE_NAME, null, value, SQLiteDatabase.CONFLICT_IGNORE);
+                        if (_id != -1) count++;
+                    }
+                    sqLiteDatabase.setTransactionSuccessful();
+                } finally {
+                    sqLiteDatabase.endTransaction();
+                }
+                break;
+            case MovieEntry.CODE_TABLE:
+                sqLiteDatabase.beginTransaction();
+
+                try {
+                    for (ContentValues value : values) {
+
+                        long _id = sqLiteDatabase.insertWithOnConflict(MovieEntry.TABLE_NAME, null, value, SQLiteDatabase.CONFLICT_IGNORE);
+                        if (_id != -1) count++;
+                    }
+                    sqLiteDatabase.setTransactionSuccessful();
+                } finally {
+                    sqLiteDatabase.endTransaction();
+                }
+                break;
+            default:
+                return super.bulkInsert(uri, values);
+        }
+        getContext().getContentResolver().notifyChange(uri, null);
+        return count;
     }
 }

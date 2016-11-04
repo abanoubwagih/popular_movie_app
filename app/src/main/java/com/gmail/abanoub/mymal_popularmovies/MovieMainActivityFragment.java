@@ -2,8 +2,17 @@ package com.gmail.abanoub.mymal_popularmovies;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.LoaderManager;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.CursorLoader;
+import android.content.Loader;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -12,9 +21,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import com.gmail.abanoub.mymal_popularmovies.data.fetched.FetchedMoviesList;
 import com.gmail.abanoub.mymal_popularmovies.data.fetched.IMoviesServices;
+import com.gmail.abanoub.mymal_popularmovies.data.provider.MoviesContract;
 
 import java.util.ArrayList;
 
@@ -28,26 +39,28 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MovieMainActivityFragment extends Fragment {
+public class MovieMainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String LOG_TAG = MovieMainActivityFragment.class.getSimpleName();
+    private static final int MOVIE_LOADER_CALLBACK = 5151;
     @BindView(R.id.grid_movies_list)
     GridView gridView;
+    int sortType;
     private IActivityFragmentCallBack iActivityFragmentCallBack;
     private Context context;
-    private MoviesArrayAdapter moviesArrayAdapter;
-    private ArrayList<FetchedMoviesList.Movie> moviesArrayList;
+    private MovieCursorAdapter movieCursorAdapter;
     private int itemPositionIndex;
 
     public MovieMainActivityFragment() {
-        Log.d(LOG_TAG, "MovieMainActivityFragment");
     }
 
     @OnItemClick(R.id.grid_movies_list)
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
 
-        iActivityFragmentCallBack.onSelectedItemFromGrid(moviesArrayAdapter.getItem(position), position, id);
+        Cursor cursor = (Cursor) parent.getAdapter().getItem(position);
+
+        iActivityFragmentCallBack.onSelectedItemFromGrid(cursor, position, id);
     }
 
     @Override
@@ -63,8 +76,6 @@ public class MovieMainActivityFragment extends Fragment {
     }
 
     private void onAttachStarted(Context context) {
-        Log.d(LOG_TAG, "onAttach");
-
         this.context = context;
         if (context instanceof MovieMainActivityFragment.IActivityFragmentCallBack) {
 
@@ -74,6 +85,12 @@ public class MovieMainActivityFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateMoviesList();
+
+    }
 
     @Override
     public void onDetach() {
@@ -84,21 +101,42 @@ public class MovieMainActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        Log.d(LOG_TAG, "onCreateView");
+
         View root = inflater.inflate(R.layout.fragment_movie_main, container, false);
         ButterKnife.bind(this, root);
-        moviesArrayAdapter = new MoviesArrayAdapter(getActivity(), R.layout.list_item_movie, moviesArrayList);
-        gridView.setAdapter(moviesArrayAdapter);
+
+        movieCursorAdapter = new MovieCursorAdapter(context, null);
+        gridView.setAdapter(movieCursorAdapter);
         if (itemPositionIndex != 0) gridView.setSelection(itemPositionIndex);
-        moviesArrayAdapter.notifyDataSetChanged();
+
+        movieCursorAdapter.notifyDataSetChanged();
         return root;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        getLoaderManager().initLoader(MOVIE_LOADER_CALLBACK, null, this);
+        super.onActivityCreated(savedInstanceState);
     }
 
     private void updateMoviesList() {
 
-        Log.d(LOG_TAG, "updateMoviesList");
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String SORT_TYPE = preferences.getString(getString(R.string.pref_sort_movies_list), getString(R.string.pref_sort_default));
+
+        if (!isConnected()) {
+            Toast.makeText(context, "no internet connection", Toast.LENGTH_LONG).show();
+            getLoaderManager().restartLoader(MOVIE_LOADER_CALLBACK, null, MovieMainActivityFragment.this);
+        }
+        String SORT_TYPE = getSortType();
+        sortType = (SORT_TYPE.equals(getString(R.string.sort_popular))) ?
+                MoviesContract.MovieEntry.MOVIE_SORT_TYPE_POPULAR : MoviesContract.MovieEntry.MOVIE_SORT_TYPE_Rate;
+        if (SORT_TYPE.equals(getString(R.string.sort_popular)))
+            sortType = MoviesContract.MovieEntry.MOVIE_SORT_TYPE_POPULAR;
+        else if (SORT_TYPE.equals(getString(R.string.sort_rate)))
+            sortType = MoviesContract.MovieEntry.MOVIE_SORT_TYPE_Rate;
+        else {
+            getLoaderManager().restartLoader(MOVIE_LOADER_CALLBACK, null, MovieMainActivityFragment.this);
+            return;
+        }
 
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -113,15 +151,14 @@ public class MovieMainActivityFragment extends Fragment {
         moviesListCall.enqueue(new Callback<FetchedMoviesList>() {
             @Override
             public void onResponse(Call<FetchedMoviesList> call, Response<FetchedMoviesList> response) {
-                moviesArrayList = (ArrayList<FetchedMoviesList.Movie>) response.body().getResults();
 
-                if (moviesArrayList != null) {
+                ContentResolver resolver = context.getContentResolver();
+                ArrayList<ContentValues> contents = MoviesContract.getMoviesContentValues(response.body(), sortType);
 
-                    Log.d(LOG_TAG, "update adapter");
+                int effectedRows = resolver.bulkInsert(MoviesContract.MovieEntry.CONTENT_URI_TABLE,
+                        contents.toArray(new ContentValues[contents.size()]));
+                Log.d(LOG_TAG, String.valueOf(effectedRows));
 
-                    moviesArrayAdapter.clear();
-                    moviesArrayAdapter.addAll(moviesArrayList);
-                }
             }
 
             @Override
@@ -132,23 +169,21 @@ public class MovieMainActivityFragment extends Fragment {
 
     }
 
+    private String getSortType() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return preferences.getString(getString(R.string.pref_sort_movies_list), getString(R.string.pref_sort_default));
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(LOG_TAG, "onCreate");
 
-        if (savedInstanceState == null || !savedInstanceState.containsKey(getString(R.string.save_instance_moviesArrayList))) {
-            moviesArrayList = new ArrayList<>();
-            Log.d(LOG_TAG, "onCreateView no instansce ");
+        if (savedInstanceState == null || !savedInstanceState.containsKey(getString(R.string.save_instance_itemPositionIndex))) {
+//            moviesArrayList = new ArrayList<>();
             itemPositionIndex = 0;
             updateMoviesList();
-
-
         } else {
-            Log.d(LOG_TAG, "onCreateView with instance ");
-
-            moviesArrayList = savedInstanceState.getParcelableArrayList(getString(R.string.save_instance_moviesArrayList));
+//            moviesArrayList = savedInstanceState.getParcelableArrayList(getString(R.string.save_instance_moviesArrayList));
             itemPositionIndex = savedInstanceState.getInt(getString(R.string.save_instance_itemPositionIndex));
         }
 
@@ -158,14 +193,47 @@ public class MovieMainActivityFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
 
         itemPositionIndex = gridView.getFirstVisiblePosition();
-        outState.putParcelableArrayList(getString(R.string.save_instance_moviesArrayList), moviesArrayList);
+//        outState.putParcelableArrayList(getString(R.string.save_instance_moviesArrayList), moviesArrayList);
         outState.putInt(getString(R.string.save_instance_itemPositionIndex), itemPositionIndex);
-        Log.d(LOG_TAG, "onSaveInstanceState");
+
         super.onSaveInstanceState(outState);
     }
 
-    public interface IActivityFragmentCallBack {
-        void onSelectedItemFromGrid(FetchedMoviesList.Movie movie, int position, long id);
+    @Override
+    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+
+        String SORT_TYPE = getSortType();
+        Uri currentUri;
+
+        if (SORT_TYPE.equals(getString(R.string.sort_popular)))
+            currentUri = MoviesContract.MovieEntry.CONTENT_URI_POPULAR_MOVIES;
+        else if (SORT_TYPE.equals(getString(R.string.sort_rate)))
+            currentUri = MoviesContract.MovieEntry.CONTENT_URI_RATE_MOVIE;
+        else currentUri = MoviesContract.MovieEntry.CONTENT_URI_FAVOURITE_MOVIE;
+
+
+        return new CursorLoader(context, currentUri, null, null, null, null);
     }
 
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        movieCursorAdapter.swapCursor(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        movieCursorAdapter.swapCursor(null);
+    }
+
+    public boolean isConnected() {
+
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return (networkInfo != null && networkInfo.isConnectedOrConnecting());
+
+    }
+
+    public interface IActivityFragmentCallBack {
+        void onSelectedItemFromGrid(Cursor cursor, int position, long id);
+    }
 }

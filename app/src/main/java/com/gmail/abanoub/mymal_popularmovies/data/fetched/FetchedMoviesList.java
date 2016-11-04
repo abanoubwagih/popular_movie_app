@@ -1,7 +1,10 @@
 package com.gmail.abanoub.mymal_popularmovies.data.fetched;
 
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.gmail.abanoub.mymal_popularmovies.data.provider.MoviesContract;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,19 +14,6 @@ import java.util.List;
  */
 
 public class FetchedMoviesList implements Parcelable{
-
-    private int page;
-    private int total_results;
-    private int total_pages;
-
-    private List<Movie> results;
-
-    protected FetchedMoviesList(Parcel in) {
-        page = in.readInt();
-        total_results = in.readInt();
-        total_pages = in.readInt();
-        results = in.createTypedArrayList(Movie.CREATOR);
-    }
 
     public static final Creator<FetchedMoviesList> CREATOR = new Creator<FetchedMoviesList>() {
         @Override
@@ -36,6 +26,17 @@ public class FetchedMoviesList implements Parcelable{
             return new FetchedMoviesList[size];
         }
     };
+    private int page;
+    private int total_results;
+    private int total_pages;
+    private List<Movie> results;
+
+    protected FetchedMoviesList(Parcel in) {
+        page = in.readInt();
+        total_results = in.readInt();
+        total_pages = in.readInt();
+        results = in.createTypedArrayList(Movie.CREATOR);
+    }
 
     public int getPage() {
         return page;
@@ -83,6 +84,17 @@ public class FetchedMoviesList implements Parcelable{
     }
 
     public static class Movie implements Parcelable {
+        public static final Creator<Movie> CREATOR = new Creator<Movie>() {
+            @Override
+            public Movie createFromParcel(Parcel in) {
+                return new Movie(in);
+            }
+
+            @Override
+            public Movie[] newArray(int size) {
+                return new Movie[size];
+            }
+        };
         private String poster_path;
         private boolean adult;
         private String overview;
@@ -97,8 +109,29 @@ public class FetchedMoviesList implements Parcelable{
         private boolean video;
         private double vote_average;
         private List<Integer> genre_ids;
+        private boolean favourite;
 
         public Movie() {
+        }
+
+        public Movie(Cursor cursor) {
+
+            this.poster_path = cursor.getString(cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_MOVIE_POSTER_PATH));
+            this.overview = cursor.getString(cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_MOVIE_OVERVIEW));
+            this.release_date = cursor.getString(cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_MOVIE_RELEASE_DATE));
+            this.original_title = cursor.getString(cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_MOVIE_ORIGINAL_TITLE));
+            this.original_language = cursor.getString(cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_MOVIE_ORIGINAL_LANGUAGE));
+            this.title = cursor.getString(cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_MOVIE_TITLE));
+            this.backdrop_path = cursor.getString(cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_MOVIE_BACKDROP_PATH));
+            this.adult = cursor.getInt(cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_MOVIE_ADULT)) == 1;
+            this.id = cursor.getInt(cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_MOVIE_ID));
+            this.popularity = cursor.getDouble(cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_MOVIE_POPULARITY));
+            this.vote_count = cursor.getInt(cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_MOVIE_VOTE_COUNT));
+            this.video = cursor.getInt(cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_MOVIE_VIDEO)) == 1;
+            this.vote_average = cursor.getDouble(cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_MOVIE_VOTE_AVERAGE));
+            this.favourite = cursor.getInt(cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_MOVIE_FAVOURITE)) == 1;
+            this.genre_ids = new ArrayList<>();
+
         }
 
         protected Movie(Parcel in) {
@@ -114,6 +147,7 @@ public class FetchedMoviesList implements Parcelable{
             popularity = in.readDouble();
             vote_count = in.readInt();
             video = in.readByte() != 0;
+            favourite = in.readByte() != 0;
             vote_average = in.readDouble();
             int count = in.readInt();
             genre_ids = new ArrayList<>(count);
@@ -122,18 +156,6 @@ public class FetchedMoviesList implements Parcelable{
             }
 
         }
-
-        public static final Creator<Movie> CREATOR = new Creator<Movie>() {
-            @Override
-            public Movie createFromParcel(Parcel in) {
-                return new Movie(in);
-            }
-
-            @Override
-            public Movie[] newArray(int size) {
-                return new Movie[size];
-            }
-        };
 
         public String getPoster_path() {
             return poster_path;
@@ -274,12 +296,21 @@ public class FetchedMoviesList implements Parcelable{
             parcel.writeDouble(popularity);
             parcel.writeInt(vote_count);
             parcel.writeByte((byte) (video ? 1 : 0));
+            parcel.writeByte((byte) (favourite ? 1 : 0));
             parcel.writeDouble(vote_average);
             int count = genre_ids.size();
             parcel.writeInt(count);
             for (int j = 0; j < count; j++) {
                 parcel.writeInt(genre_ids.get(i));
             }
+        }
+
+        public boolean isFavourite() {
+            return favourite;
+        }
+
+        public void setFavourite(boolean favourite) {
+            this.favourite = favourite;
         }
     }
 }

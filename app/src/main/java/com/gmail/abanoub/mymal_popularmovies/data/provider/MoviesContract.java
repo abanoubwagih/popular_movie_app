@@ -1,6 +1,7 @@
 package com.gmail.abanoub.mymal_popularmovies.data.provider;
 
 import android.content.ContentValues;
+import android.net.Uri;
 import android.provider.BaseColumns;
 
 import com.gmail.abanoub.mymal_popularmovies.data.fetched.FetchMovieReviews;
@@ -31,6 +32,7 @@ import static com.gmail.abanoub.mymal_popularmovies.data.provider.MoviesContract
 import static com.gmail.abanoub.mymal_popularmovies.data.provider.MoviesContract.TrailerEntry.COLUMN_TRAILER_ISO_3166_1;
 import static com.gmail.abanoub.mymal_popularmovies.data.provider.MoviesContract.TrailerEntry.COLUMN_TRAILER_ISO_639_1;
 import static com.gmail.abanoub.mymal_popularmovies.data.provider.MoviesContract.TrailerEntry.COLUMN_TRAILER_KEY;
+import static com.gmail.abanoub.mymal_popularmovies.data.provider.MoviesContract.TrailerEntry.COLUMN_TRAILER_MOVIE_ID;
 import static com.gmail.abanoub.mymal_popularmovies.data.provider.MoviesContract.TrailerEntry.COLUMN_TRAILER_NAME;
 import static com.gmail.abanoub.mymal_popularmovies.data.provider.MoviesContract.TrailerEntry.COLUMN_TRAILER_SITE;
 import static com.gmail.abanoub.mymal_popularmovies.data.provider.MoviesContract.TrailerEntry.COLUMN_TRAILER_SIZE;
@@ -45,7 +47,10 @@ public final class MoviesContract {
     public static final String DATA_TYPE_BOOLEAN = " NUMERIC ";
     public static final String NOT_NULL = " NOT NULL ";
     public static final String COMA_SP = " , ";
-    public static final String AUTHORITY = "content://com.gmail.abanoub.mymal_popularmovies";
+    public static final String AUTHORITY = "com.gmail.abanoub.mymal_popularmovies";
+
+    public static final Uri URI_BASE_CONTENT = Uri.parse("content://" + AUTHORITY);
+
 
     public static ArrayList<ContentValues> getReviewsContentValues(FetchMovieReviews fetchMovieReviews) {
         ArrayList<ContentValues> contentValuesArrayList = new ArrayList<>();
@@ -77,7 +82,7 @@ public final class MoviesContract {
             contentValues.put(COLUMN_TRAILER_TYPE, movieTrailer.getType());
             contentValues.put(COLUMN_TRAILER_ISO_639_1, movieTrailer.getIso_639_1());
             contentValues.put(COLUMN_TRAILER_ISO_3166_1, movieTrailer.getIso_3166_1());
-            contentValues.put(COLUMN_REVIEW_MOVIE_ID, movie_id);
+            contentValues.put(COLUMN_TRAILER_MOVIE_ID, movie_id);
             contentValuesArrayList.add(contentValues);
         }
         return contentValuesArrayList;
@@ -108,8 +113,12 @@ public final class MoviesContract {
         return contentValuesArrayList;
     }
 
+    public static Uri appendUriWithId(final Uri URI_BASE_CONTENT, int id) {
 
-    public final class ReviewEntry implements BaseColumns {
+        return URI_BASE_CONTENT.buildUpon().appendPath(String.valueOf(id)).build();
+    }
+
+    public static final class ReviewEntry implements BaseColumns {
 
 
         public static final String _ID = BaseColumns._ID;
@@ -136,12 +145,12 @@ public final class MoviesContract {
         public static final int CODE_TABLE = 100;
         public static final int CODE_TABLE_ID = 101;
 
-        public static final String CONTENT_URI_TABLE = AUTHORITY + CONTENT_PROVIDER_URI_TABLE_PATTERN;
-        public static final String CONTENT_URI_SPECIFIC_MOVIE = AUTHORITY + CONTENT_PROVIDER_URI_TABLE_RECORD_PATTERN;
+        public static final Uri CONTENT_URI_TABLE = URI_BASE_CONTENT.buildUpon()
+                .appendPath(CONTENT_PROVIDER_URI_TABLE_PATTERN).build();
 
     }
 
-    public final class TrailerEntry implements BaseColumns {
+    public static final class TrailerEntry implements BaseColumns {
 
         public static final String _ID = BaseColumns._ID;
         public static final String COLUMN_TRAILER_ID = "trailer_id";
@@ -175,11 +184,13 @@ public final class MoviesContract {
         public static final int CODE_TABLE = 200;
         public static final int CODE_TABLE_ID = 201;
 
-        public static final String CONTENT_URI_TABLE = AUTHORITY + CONTENT_PROVIDER_URI_TABLE_PATTERN;
-        public static final String CONTENT_URI_SPECIFIC_MOVIE = AUTHORITY + CONTENT_PROVIDER_URI_TABLE_RECORD_PATTERN;
+        public static final Uri CONTENT_URI_TABLE = URI_BASE_CONTENT.buildUpon()
+                .appendPath(CONTENT_PROVIDER_URI_TABLE_PATTERN).build();
+
+
     }
 
-    public final class MovieEntry implements BaseColumns {
+    public static final class MovieEntry implements BaseColumns {
 
         public static final String _ID = BaseColumns._ID;
         public static final String COLUMN_MOVIE_ID = "movie_id";
@@ -230,9 +241,9 @@ public final class MoviesContract {
         public static final String DELETE_TABLE = "DROP TABLE IF EXISTS  " + TABLE_NAME;
 
         public static final String CONTENT_PROVIDER_URI_TABLE_PATTERN = TABLE_NAME;
-        public static final String CONTENT_PROVIDER_URI_TABLE_POPULAR_PATTERN = "/popular";
-        public static final String CONTENT_PROVIDER_URI_TABLE_RATE_PATTERN = "/rate";
-        public static final String CONTENT_PROVIDER_URI_TABLE_FAVOURITE_PATTERN = "/favourite";
+        public static final String CONTENT_PROVIDER_URI_TABLE_POPULAR_PATTERN = CONTENT_PROVIDER_URI_TABLE_PATTERN + "/popular";
+        public static final String CONTENT_PROVIDER_URI_TABLE_RATE_PATTERN = CONTENT_PROVIDER_URI_TABLE_PATTERN + "/rate";
+        public static final String CONTENT_PROVIDER_URI_TABLE_FAVOURITE_PATTERN = CONTENT_PROVIDER_URI_TABLE_PATTERN + "/favourite";
         public static final String CONTENT_PROVIDER_URI_TABLE_RECORD_PATTERN = CONTENT_PROVIDER_URI_TABLE_PATTERN + "/#";
 
         public static final int CODE_TABLE = 300;
@@ -241,7 +252,18 @@ public final class MoviesContract {
         public static final int CODE_TABLE_RATE = 303;
         public static final int CODE_TABLE_FAVOURITE = 304;
 
-        public static final String CONTENT_URI_TABLE = AUTHORITY + CONTENT_PROVIDER_URI_TABLE_PATTERN;
-        public static final String CONTENT_URI_SPECIFIC_MOVIE = AUTHORITY + CONTENT_PROVIDER_URI_TABLE_RECORD_PATTERN;
+        public static final Uri CONTENT_URI_TABLE = URI_BASE_CONTENT.buildUpon()
+                .appendPath(CONTENT_PROVIDER_URI_TABLE_PATTERN).build();
+
+        public static final Uri CONTENT_URI_POPULAR_MOVIES = CONTENT_URI_TABLE.buildUpon()
+                .appendPath("popular").build();
+
+        public static final Uri CONTENT_URI_RATE_MOVIE = CONTENT_URI_TABLE.buildUpon()
+                .appendPath("rate").build();
+
+        public static final Uri CONTENT_URI_FAVOURITE_MOVIE = CONTENT_URI_TABLE.buildUpon()
+                .appendPath("favourite").build();
+
+
     }
 }

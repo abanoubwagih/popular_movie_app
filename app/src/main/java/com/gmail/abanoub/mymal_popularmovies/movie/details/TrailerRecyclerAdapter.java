@@ -13,6 +13,7 @@ import com.gmail.abanoub.mymal_popularmovies.R;
 import com.gmail.abanoub.mymal_popularmovies.data.fetched.FetchMovieTrailers;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -56,7 +57,13 @@ public class TrailerRecyclerAdapter extends RecyclerView.Adapter<TrailerRecycler
     }
 
     public void addAndClear(List<FetchMovieTrailers.MovieTrailer> objects) {
-        movieTrailers.clear();
+
+        if (movieTrailers != null) {
+
+            movieTrailers.clear();
+        } else {
+            movieTrailers = new ArrayList<>();
+        }
         movieTrailers.addAll(objects);
         notifyDataSetChanged();
     }

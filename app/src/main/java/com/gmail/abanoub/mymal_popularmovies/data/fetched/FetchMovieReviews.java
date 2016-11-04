@@ -1,7 +1,10 @@
 package com.gmail.abanoub.mymal_popularmovies.data.fetched;
 
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.gmail.abanoub.mymal_popularmovies.data.provider.MoviesContract;
 
 import java.util.List;
 
@@ -106,6 +109,13 @@ public class FetchMovieReviews implements Parcelable {
         private String author;
         private String content;
         private String url;
+
+        public MovieReviews(Cursor cursor) {
+            this.id = cursor.getString(cursor.getColumnIndex(MoviesContract.ReviewEntry.COLUMN_REVIEW_ID));
+            this.author = cursor.getString(cursor.getColumnIndex(MoviesContract.ReviewEntry.COLUMN_REVIEW_AUTHOR));
+            this.content = cursor.getString(cursor.getColumnIndex(MoviesContract.ReviewEntry.COLUMN_REVIEW_CONTENT));
+            this.url = cursor.getString(cursor.getColumnIndex(MoviesContract.ReviewEntry.COLUMN_REVIEW_URL));
+        }
 
         protected MovieReviews(Parcel in) {
             id = in.readString();

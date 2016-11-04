@@ -1,24 +1,15 @@
 package com.gmail.abanoub.mymal_popularmovies.data.fetched;
 
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.gmail.abanoub.mymal_popularmovies.data.provider.MoviesContract;
 
 import java.util.List;
 
 
 public class FetchMovieTrailers implements Parcelable {
-
-    private int id;
-
-    private List<MovieTrailer> results;
-
-    public FetchMovieTrailers() {
-    }
-
-    protected FetchMovieTrailers(Parcel in) {
-        id = in.readInt();
-        results = in.createTypedArrayList(MovieTrailer.CREATOR);
-    }
 
     public static final Creator<FetchMovieTrailers> CREATOR = new Creator<FetchMovieTrailers>() {
         @Override
@@ -31,6 +22,16 @@ public class FetchMovieTrailers implements Parcelable {
             return new FetchMovieTrailers[size];
         }
     };
+    private int id;
+    private List<MovieTrailer> results;
+
+    public FetchMovieTrailers() {
+    }
+
+    protected FetchMovieTrailers(Parcel in) {
+        id = in.readInt();
+        results = in.createTypedArrayList(MovieTrailer.CREATOR);
+    }
 
     public int getId() {
         return id;
@@ -60,6 +61,17 @@ public class FetchMovieTrailers implements Parcelable {
     }
 
     public static class MovieTrailer implements Parcelable {
+        public static final Creator<MovieTrailer> CREATOR = new Creator<MovieTrailer>() {
+            @Override
+            public MovieTrailer createFromParcel(Parcel in) {
+                return new MovieTrailer(in);
+            }
+
+            @Override
+            public MovieTrailer[] newArray(int size) {
+                return new MovieTrailer[size];
+            }
+        };
         private String id;
         private String iso_639_1;
         private String iso_3166_1;
@@ -72,6 +84,17 @@ public class FetchMovieTrailers implements Parcelable {
         public MovieTrailer() {
         }
 
+        public MovieTrailer(Cursor cursor) {
+            this.size = cursor.getInt(cursor.getColumnIndex(MoviesContract.TrailerEntry.COLUMN_TRAILER_SIZE));
+            this.type = cursor.getString(cursor.getColumnIndex(MoviesContract.TrailerEntry.COLUMN_TRAILER_TYPE));
+            this.site = cursor.getString(cursor.getColumnIndex(MoviesContract.TrailerEntry.COLUMN_TRAILER_SITE));
+            this.name = cursor.getString(cursor.getColumnIndex(MoviesContract.TrailerEntry.COLUMN_TRAILER_NAME));
+            this.key = cursor.getString(cursor.getColumnIndex(MoviesContract.TrailerEntry.COLUMN_TRAILER_KEY));
+            this.iso_3166_1 = cursor.getString(cursor.getColumnIndex(MoviesContract.TrailerEntry.COLUMN_TRAILER_ISO_3166_1));
+            this.iso_639_1 = cursor.getString(cursor.getColumnIndex(MoviesContract.TrailerEntry.COLUMN_TRAILER_ISO_639_1));
+            this.id = cursor.getString(cursor.getColumnIndex(MoviesContract.TrailerEntry.COLUMN_TRAILER_ID));
+        }
+
         protected MovieTrailer(Parcel in) {
             id = in.readString();
             iso_639_1 = in.readString();
@@ -82,18 +105,6 @@ public class FetchMovieTrailers implements Parcelable {
             size = in.readInt();
             type = in.readString();
         }
-
-        public static final Creator<MovieTrailer> CREATOR = new Creator<MovieTrailer>() {
-            @Override
-            public MovieTrailer createFromParcel(Parcel in) {
-                return new MovieTrailer(in);
-            }
-
-            @Override
-            public MovieTrailer[] newArray(int size) {
-                return new MovieTrailer[size];
-            }
-        };
 
         public String getId() {
             return id;

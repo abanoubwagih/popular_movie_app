@@ -7,6 +7,7 @@
     <string name="pref_sort_default" translatable="false">popular</string>
     <string name="sort_popular" translatable="false">popular</string>
     <string name="sort_rate" translatable="false">top_rated</string>
+    <string name="sort_favourite" translatable="false">sort_favourite</string>
     <string name="pref_how_sorting_movies" translatable="false">Sorting Movies</string>
     <string name="pref_sort_movies_list" translatable="false">sortMoviesList</string>
 
@@ -23,5 +24,6 @@
     <string name="save_instance_movieTrailers" translatable="false">movieTrailers</string>
     <string name="save_instance_bundle">bundleFragment</string>
     <string name="save_instance_moviesArrayList" translatable="false">save_instance_moviesArrayList</string>
-    <string name="save_instance_itemPositionIndex">save_instance_itemPositionIndex</string>
+    <string name="save_instance_itemPositionIndex" translatable="false">save_instance_itemPositionIndex</string>
+    <string name="action_share">action_share</string>
 </resources>

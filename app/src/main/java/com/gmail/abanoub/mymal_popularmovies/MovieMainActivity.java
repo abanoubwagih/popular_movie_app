@@ -1,6 +1,7 @@
 package com.gmail.abanoub.mymal_popularmovies;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -59,20 +60,22 @@ public class MovieMainActivity extends AppCompatActivity implements MovieMainAct
     }
 
     @Override
-    public void onSelectedItemFromGrid(FetchedMoviesList.Movie movie, int position, long id) {
+    public void onSelectedItemFromGrid(Cursor cursor, int position, long id) {
 
         if (largeScreen) {
-            MovieDetailsFragment movieDetailsFragment = MovieDetailsFragment.newInstance(movie);
+            MovieDetailsFragment movieDetailsFragment =
+                    MovieDetailsFragment.newInstance(cursor);
             getFragmentManager().beginTransaction().replace(R.id.fragment_details, movieDetailsFragment).commit();
 
         } else {
 
             Bundle bundle = new Bundle();
-            bundle.putParcelable(MovieDetailsFragment.ARG_MOVIE_PARAM, movie);
+            bundle.putParcelable(MovieDetailsFragment.ARG_MOVIE_PARAM, new FetchedMoviesList.Movie(cursor));
             Intent intent = new Intent(this, MovieDetailsActivity.class);
             intent.putExtras(bundle);
             startActivity(intent);
         }
     }
+
 
 }

@@ -2,15 +2,24 @@ package com.gmail.abanoub.mymal_popularmovies.movie.details;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -23,6 +32,7 @@ import com.gmail.abanoub.mymal_popularmovies.data.fetched.FetchMovieReviews;
 import com.gmail.abanoub.mymal_popularmovies.data.fetched.FetchMovieTrailers;
 import com.gmail.abanoub.mymal_popularmovies.data.fetched.FetchedMoviesList;
 import com.gmail.abanoub.mymal_popularmovies.data.fetched.IMoviesServices;
+import com.gmail.abanoub.mymal_popularmovies.data.provider.MoviesContract;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -86,23 +96,35 @@ public class MovieDetailsFragment extends Fragment {
         return fragment;
     }
 
+    public static MovieDetailsFragment newInstance(Cursor cursor) {
+
+        MovieDetailsFragment fragment = new MovieDetailsFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(ARG_MOVIE_PARAM, new FetchedMoviesList.Movie(cursor));
+        fragment.setArguments(args);
+        return fragment;
+
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         this.context = context;
-
+        setHasOptionsMenu(true);
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         this.context = activity;
+        setHasOptionsMenu(true);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(LOG_TAG, "onCreate");
+
         if (savedInstanceState == null || !savedInstanceState.containsKey(getString(R.string.save_instance_movieParam))) {
             if (getArguments() != null) {
                 movieParam = getArguments().getParcelable(ARG_MOVIE_PARAM);
@@ -126,6 +148,7 @@ public class MovieDetailsFragment extends Fragment {
         // Inflate the layout for this fragment
         Log.d(LOG_TAG, "onCreateView");
         getActivity().setTitle(movieParam.getTitle());
+
         if (getActivity().findViewById(R.id.movie_backdrop_image) != null) {
 
             ImageView backdrop = (ImageView) getActivity().findViewById(R.id.movie_backdrop_image);
@@ -144,13 +167,8 @@ public class MovieDetailsFragment extends Fragment {
         /**
          *  favourite
          */
-        SharedPreferences sharedPreferences = getActivity().
-                getSharedPreferences(getString(R.string.share_preferences_movie_favourite), Context.MODE_PRIVATE);
 
-        boolean favourite = sharedPreferences.getBoolean(String.valueOf(movieParam.getId())
-                , getResources().getBoolean(R.bool.movie_not_favourite));
-
-        if (favourite) {
+        if (movieParam.isFavourite()) {
             movie_favourite.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
         } else {
             movie_favourite.setImageDrawable(getResources().getDrawable(R.drawable.ic_not_favorite));
@@ -173,16 +191,26 @@ public class MovieDetailsFragment extends Fragment {
         return root;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-//        updateMovieTrailer();
-//        updateMovieReview();
-    }
 
     private void updateMovieReview() {
 
         try {
+            Uri uri = MoviesContract.appendUriWithId(MoviesContract.ReviewEntry.CONTENT_URI_TABLE, movieParam.getId());
+            Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
+
+            if (cursor != null && cursor.getCount() != 0) {
+                movieReviews = getMovieReviewsFromCursor(cursor);
+
+                cursor.close();
+                return;
+            }
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "error ", e);
+            Toast.makeText(context, "error in retrive review data " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+        try {
+
+
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(getString(R.string.BASE_URL_FETCH_MOVIE_REVIEWS))
                     .client(new OkHttpClient())
@@ -194,6 +222,12 @@ public class MovieDetailsFragment extends Fragment {
             movieReviewCall.enqueue(new Callback<FetchMovieReviews>() {
                 @Override
                 public void onResponse(Call<FetchMovieReviews> call, Response<FetchMovieReviews> response) {
+                    ArrayList<ContentValues> contents = MoviesContract.getReviewsContentValues(response.body());
+                    ContentResolver resolver = getActivity().getContentResolver();
+                    int effectedRows = resolver.bulkInsert(MoviesContract.ReviewEntry.CONTENT_URI_TABLE,
+                            contents.toArray(new ContentValues[contents.size()]));
+                    Log.d(LOG_TAG, String.valueOf(effectedRows));
+
                     movieReviews = (ArrayList<FetchMovieReviews.MovieReviews>) response.body().getResults();
                     if (movieReviews != null) {
                         reviewRecyclerAdapter.addAndClear(movieReviews);
@@ -202,7 +236,7 @@ public class MovieDetailsFragment extends Fragment {
 
                 @Override
                 public void onFailure(Call<FetchMovieReviews> call, Throwable t) {
-                    Log.e(LOG_TAG, "error in fetch reviewget MovieReviews ", t);
+                    Log.e(LOG_TAG, "error in fetch review  get MovieReviews ", t);
                 }
             });
         } catch (Exception e) {
@@ -214,8 +248,32 @@ public class MovieDetailsFragment extends Fragment {
 
     }
 
-    private void updateMovieTrailer() {
+    private ArrayList<FetchMovieReviews.MovieReviews> getMovieReviewsFromCursor(Cursor cursor) {
+        ArrayList<FetchMovieReviews.MovieReviews> movieReviewses = new ArrayList<>();
 
+        while (cursor.moveToNext()) {
+
+            movieReviewses.add(new FetchMovieReviews.MovieReviews(cursor));
+        }
+
+        return movieReviewses;
+    }
+
+    private void updateMovieTrailer() {
+        try {
+            Uri uri = MoviesContract.appendUriWithId(MoviesContract.TrailerEntry.CONTENT_URI_TABLE, movieParam.getId());
+            Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
+
+            if (cursor != null && cursor.getCount() != 0) {
+                movieTrailers = getMovieTrailersFromCursor(cursor);
+
+                cursor.close();
+                return;
+            }
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "error ", e);
+            Toast.makeText(context, "error in retrive trailer data " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
         try {
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(getString(R.string.BASE_URL_FETCH_MOVIE_TRAILERS))
@@ -227,6 +285,13 @@ public class MovieDetailsFragment extends Fragment {
             movieTrailersCall.enqueue(new Callback<FetchMovieTrailers>() {
                 @Override
                 public void onResponse(Call<FetchMovieTrailers> call, Response<FetchMovieTrailers> response) {
+
+                    ArrayList<ContentValues> contents = MoviesContract.getTrailersContentValues(response.body());
+                    ContentResolver resolver = getActivity().getContentResolver();
+
+                    int effectedRows = resolver.bulkInsert(MoviesContract.TrailerEntry.CONTENT_URI_TABLE,
+                            contents.toArray(new ContentValues[contents.size()]));
+                    Log.d(LOG_TAG, String.valueOf(effectedRows));
                     movieTrailers = (ArrayList<FetchMovieTrailers.MovieTrailer>) response.body().getResults();
 
                     if (movieTrailers != null) {
@@ -247,29 +312,51 @@ public class MovieDetailsFragment extends Fragment {
 
     }
 
+    private ArrayList<FetchMovieTrailers.MovieTrailer> getMovieTrailersFromCursor(Cursor cursor) {
+        ArrayList<FetchMovieTrailers.MovieTrailer> movieTrailers = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            movieTrailers.add(new FetchMovieTrailers.MovieTrailer(cursor));
+        }
+        return movieTrailers;
+    }
+
+
     @OnClick(R.id.movie_favourite)
     public void handleMovieFavourite(View view) {
 
-        SharedPreferences sharedPreferences = getActivity().
-                getSharedPreferences(getString(R.string.share_preferences_movie_favourite), Context.MODE_PRIVATE);
+        try {
 
-        boolean favourite = sharedPreferences.getBoolean(String.valueOf(movieParam.getId())
-                , getResources().getBoolean(R.bool.movie_not_favourite));
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+            if (movieParam.isFavourite()) {
+                movie_favourite.setImageDrawable(getResources().getDrawable(R.drawable.ic_not_favorite));
+            } else {
+                movie_favourite.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
+            }
 
-        if (favourite) {
-            editor.putBoolean(String.valueOf(movieParam.getId()), getResources().getBoolean(R.bool.movie_not_favourite));
-            movie_favourite.setImageDrawable(getResources().getDrawable(R.drawable.ic_not_favorite));
+            new AsyncTask<Void, Void, Integer>() {
 
-        } else {
-            editor.putBoolean(String.valueOf(movieParam.getId()), getResources().getBoolean(R.bool.movie_favourite));
-            movie_favourite.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
+                @Override
+                protected Integer doInBackground(Void... voids) {
+                    Uri uri = MoviesContract.appendUriWithId(MoviesContract.MovieEntry.CONTENT_URI_TABLE, movieParam.getId());
 
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put(MoviesContract.MovieEntry.COLUMN_MOVIE_FAVOURITE, !movieParam.isFavourite());
+
+                    int effective = context.getContentResolver().update(uri, contentValues, null, null);
+                    return effective;
+                }
+
+                @Override
+                protected void onPostExecute(Integer integer) {
+                    Log.d(LOG_TAG, "update " + integer);
+                }
+            }.execute();
+
+            movieParam.setFavourite(!movieParam.isFavourite());
+
+
+        } catch (Exception e) {
+            Toast.makeText(context, "error in update favourite data " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
-
-        editor.apply();
-        editor.commit();
-
     }
 
     @Override
@@ -279,5 +366,38 @@ public class MovieDetailsFragment extends Fragment {
         outState.putParcelableArrayList(getString(R.string.save_instance_movieTrailers), movieTrailers);
         outState.putParcelableArrayList(getString(R.string.save_instance_movieReviews), movieReviews);
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+
+        inflater.inflate(R.menu.menu_movie_details_fragment, menu);
+        try {
+            MenuItem menuItem = menu.findItem(R.id.action_share);
+            ShareActionProvider shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+
+            if (shareActionProvider != null) {
+
+                shareActionProvider.setShareIntent(createShareTrailerIntent());
+            } else {
+                throw new NullPointerException("shareActionProvider is null");
+            }
+
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "wwwwwwwwww" + e.getMessage());
+        }
+
+    }
+
+    private Intent createShareTrailerIntent() {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        intent.setType("text/plain");
+        if (movieTrailers == null || movieTrailers.isEmpty()) {
+            updateMovieTrailer();
+        }
+        String trailerPath = context.getString(R.string.BASE_URL_WATCH_TRAILER) + movieTrailers.get(0).getKey();
+        intent.putExtra(Intent.EXTRA_TEXT, trailerPath);
+        return intent;
     }
 }

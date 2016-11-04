@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.gmail.abanoub.mymal_popularmovies.R;
 import com.gmail.abanoub.mymal_popularmovies.data.fetched.FetchMovieReviews;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -38,7 +39,12 @@ public class ReviewRecyclerAdapter extends RecyclerView.Adapter<ReviewRecyclerAd
 
     public void addAndClear(List<FetchMovieReviews.MovieReviews> objects) {
 
-        movieReviewses.clear();
+        if (movieReviewses != null) {
+            movieReviewses.clear();
+        } else {
+            movieReviewses = new ArrayList<>();
+        }
+
         movieReviewses.addAll(objects);
         notifyDataSetChanged();
 
