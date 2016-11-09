@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -75,6 +74,7 @@ public class MovieDetailsFragment extends Fragment {
     private Context context;
     private ArrayList<FetchMovieReviews.MovieReviews> movieReviews;
     private ArrayList<FetchMovieTrailers.MovieTrailer> movieTrailers;
+    private ShareActionProvider shareActionProvider;
 
 
     public MovieDetailsFragment() {
@@ -266,7 +266,9 @@ public class MovieDetailsFragment extends Fragment {
 
             if (cursor != null && cursor.getCount() != 0) {
                 movieTrailers = getMovieTrailersFromCursor(cursor);
-
+                if (shareActionProvider != null && movieTrailers != null && !movieTrailers.isEmpty()) {
+                    shareActionProvider.setShareIntent(createShareTrailerIntent());
+                }
                 cursor.close();
                 return;
             }
@@ -293,7 +295,9 @@ public class MovieDetailsFragment extends Fragment {
                             contents.toArray(new ContentValues[contents.size()]));
                     Log.d(LOG_TAG, String.valueOf(effectedRows));
                     movieTrailers = (ArrayList<FetchMovieTrailers.MovieTrailer>) response.body().getResults();
-
+                    if (shareActionProvider != null && movieTrailers != null && !movieTrailers.isEmpty()) {
+                        shareActionProvider.setShareIntent(createShareTrailerIntent());
+                    }
                     if (movieTrailers != null) {
                         trailerRecyclerAdapter.addAndClear(movieTrailers);
                     }
@@ -332,24 +336,13 @@ public class MovieDetailsFragment extends Fragment {
                 movie_favourite.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
             }
 
-            new AsyncTask<Void, Void, Integer>() {
-
-                @Override
-                protected Integer doInBackground(Void... voids) {
                     Uri uri = MoviesContract.appendUriWithId(MoviesContract.MovieEntry.CONTENT_URI_TABLE, movieParam.getId());
 
                     ContentValues contentValues = new ContentValues();
                     contentValues.put(MoviesContract.MovieEntry.COLUMN_MOVIE_FAVOURITE, !movieParam.isFavourite());
 
                     int effective = context.getContentResolver().update(uri, contentValues, null, null);
-                    return effective;
-                }
-
-                @Override
-                protected void onPostExecute(Integer integer) {
-                    Log.d(LOG_TAG, "update " + integer);
-                }
-            }.execute();
+            Log.d(LOG_TAG, "update " + effective);
 
             movieParam.setFavourite(!movieParam.isFavourite());
 
@@ -374,11 +367,14 @@ public class MovieDetailsFragment extends Fragment {
         inflater.inflate(R.menu.menu_movie_details_fragment, menu);
         try {
             MenuItem menuItem = menu.findItem(R.id.action_share);
-            ShareActionProvider shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+            shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
 
             if (shareActionProvider != null) {
 
+                if (movieTrailers != null && !movieTrailers.isEmpty()) {
+
                 shareActionProvider.setShareIntent(createShareTrailerIntent());
+                }
             } else {
                 throw new NullPointerException("shareActionProvider is null");
             }
@@ -393,9 +389,6 @@ public class MovieDetailsFragment extends Fragment {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
         intent.setType("text/plain");
-        if (movieTrailers == null || movieTrailers.isEmpty()) {
-            updateMovieTrailer();
-        }
         String trailerPath = context.getString(R.string.BASE_URL_WATCH_TRAILER) + movieTrailers.get(0).getKey();
         intent.putExtra(Intent.EXTRA_TEXT, trailerPath);
         return intent;
