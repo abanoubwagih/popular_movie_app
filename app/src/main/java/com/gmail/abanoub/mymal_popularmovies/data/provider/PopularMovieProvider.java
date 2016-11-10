@@ -172,13 +172,18 @@ public class PopularMovieProvider extends ContentProvider {
                 selection = MovieEntry.COLUMN_MOVIE_ID + " = ? ";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 id = sqLiteDatabase.update(MovieEntry.TABLE_NAME, contentValues, selection, selectionArgs);
+                if (id != 0) {
+                    getContext().getContentResolver().notifyChange(uri, null);
+                    getContext().getContentResolver().notifyChange(MovieEntry.CONTENT_URI_FAVOURITE_MOVIE, null);
+                    getContext().getContentResolver().notifyChange(MovieEntry.CONTENT_URI_POPULAR_MOVIES, null);
+                    getContext().getContentResolver().notifyChange(MovieEntry.CONTENT_URI_RATE_MOVIE, null);
+                    getContext().getContentResolver().notifyChange(MovieEntry.CONTENT_URI_TABLE, null);
+                }
                 break;
             default:
                 throw new IllegalArgumentException("cannot insert . unknown uri " + uri);
         }
-        if (id != 0) {
-            getContext().getContentResolver().notifyChange(uri, null);
-        }
+
         return id;
     }
 

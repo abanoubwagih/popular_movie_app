@@ -289,11 +289,20 @@ public class MovieDetailsFragment extends Fragment {
                 public void onResponse(Call<FetchMovieTrailers> call, Response<FetchMovieTrailers> response) {
 
                     ArrayList<ContentValues> contents = MoviesContract.getTrailersContentValues(response.body());
-                    ContentResolver resolver = getActivity().getContentResolver();
+                    ContentResolver resolver;
+                    try {
 
-                    int effectedRows = resolver.bulkInsert(MoviesContract.TrailerEntry.CONTENT_URI_TABLE,
-                            contents.toArray(new ContentValues[contents.size()]));
-                    Log.d(LOG_TAG, String.valueOf(effectedRows));
+
+                        resolver = getActivity().getContentResolver();
+                    } catch (Exception e) {
+                        resolver = null;
+                    }
+                    if (resolver != null) {
+
+                        int effectedRows = resolver.bulkInsert(MoviesContract.TrailerEntry.CONTENT_URI_TABLE,
+                                contents.toArray(new ContentValues[contents.size()]));
+                        Log.d(LOG_TAG, String.valueOf(effectedRows));
+                    }
                     movieTrailers = (ArrayList<FetchMovieTrailers.MovieTrailer>) response.body().getResults();
                     if (shareActionProvider != null && movieTrailers != null && !movieTrailers.isEmpty()) {
                         shareActionProvider.setShareIntent(createShareTrailerIntent());
@@ -301,6 +310,7 @@ public class MovieDetailsFragment extends Fragment {
                     if (movieTrailers != null) {
                         trailerRecyclerAdapter.addAndClear(movieTrailers);
                     }
+
                 }
 
                 @Override
@@ -336,12 +346,12 @@ public class MovieDetailsFragment extends Fragment {
                 movie_favourite.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
             }
 
-                    Uri uri = MoviesContract.appendUriWithId(MoviesContract.MovieEntry.CONTENT_URI_TABLE, movieParam.getId());
+            Uri uri = MoviesContract.appendUriWithId(MoviesContract.MovieEntry.CONTENT_URI_TABLE, movieParam.getId());
 
-                    ContentValues contentValues = new ContentValues();
-                    contentValues.put(MoviesContract.MovieEntry.COLUMN_MOVIE_FAVOURITE, !movieParam.isFavourite());
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(MoviesContract.MovieEntry.COLUMN_MOVIE_FAVOURITE, !movieParam.isFavourite());
 
-                    int effective = context.getContentResolver().update(uri, contentValues, null, null);
+            int effective = context.getContentResolver().update(uri, contentValues, null, null);
             Log.d(LOG_TAG, "update " + effective);
 
             movieParam.setFavourite(!movieParam.isFavourite());
@@ -373,7 +383,7 @@ public class MovieDetailsFragment extends Fragment {
 
                 if (movieTrailers != null && !movieTrailers.isEmpty()) {
 
-                shareActionProvider.setShareIntent(createShareTrailerIntent());
+                    shareActionProvider.setShareIntent(createShareTrailerIntent());
                 }
             } else {
                 throw new NullPointerException("shareActionProvider is null");

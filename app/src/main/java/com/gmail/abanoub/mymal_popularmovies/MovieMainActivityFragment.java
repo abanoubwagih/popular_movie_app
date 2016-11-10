@@ -57,9 +57,8 @@ public class MovieMainActivityFragment extends Fragment implements LoaderManager
     @OnItemClick(R.id.grid_movies_list)
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-
+        itemPositionIndex = position;
         Cursor cursor = (Cursor) parent.getAdapter().getItem(position);
-
         iActivityFragmentCallBack.onSelectedItemFromGrid(cursor, position, id);
     }
 
@@ -179,11 +178,9 @@ public class MovieMainActivityFragment extends Fragment implements LoaderManager
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null || !savedInstanceState.containsKey(getString(R.string.save_instance_itemPositionIndex))) {
-//            moviesArrayList = new ArrayList<>();
             itemPositionIndex = 0;
             updateMoviesList();
         } else {
-//            moviesArrayList = savedInstanceState.getParcelableArrayList(getString(R.string.save_instance_moviesArrayList));
             itemPositionIndex = savedInstanceState.getInt(getString(R.string.save_instance_itemPositionIndex));
         }
 
@@ -192,8 +189,6 @@ public class MovieMainActivityFragment extends Fragment implements LoaderManager
     @Override
     public void onSaveInstanceState(Bundle outState) {
 
-        itemPositionIndex = gridView.getFirstVisiblePosition();
-//        outState.putParcelableArrayList(getString(R.string.save_instance_moviesArrayList), moviesArrayList);
         outState.putInt(getString(R.string.save_instance_itemPositionIndex), itemPositionIndex);
 
         super.onSaveInstanceState(outState);
@@ -218,6 +213,7 @@ public class MovieMainActivityFragment extends Fragment implements LoaderManager
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         movieCursorAdapter.swapCursor(cursor);
+        gridView.setSelection(itemPositionIndex);
     }
 
     @Override

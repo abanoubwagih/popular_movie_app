@@ -33,8 +33,6 @@ public class MovieMainActivity extends AppCompatActivity implements MovieMainAct
         if (savedInstanceState == null) {
             MovieMainActivityFragment mainActivityFragment = new MovieMainActivityFragment();
             getFragmentManager().beginTransaction().add(R.id.fragment_main, mainActivityFragment).commit();
-        } else {
-
         }
 
     }

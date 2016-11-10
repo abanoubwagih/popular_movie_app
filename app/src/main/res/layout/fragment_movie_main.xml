@@ -8,6 +8,7 @@
 
     <GridView
         android:id="@+id/grid_movies_list"
+        style="@style/MovieGridView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:columnWidth="@dimen/gridcolumnwidth"
