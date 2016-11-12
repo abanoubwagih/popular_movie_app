@@ -223,11 +223,21 @@ public class MovieDetailsFragment extends Fragment {
                 @Override
                 public void onResponse(Call<FetchMovieReviews> call, Response<FetchMovieReviews> response) {
                     ArrayList<ContentValues> contents = MoviesContract.getReviewsContentValues(response.body());
-                    ContentResolver resolver = getActivity().getContentResolver();
-                    int effectedRows = resolver.bulkInsert(MoviesContract.ReviewEntry.CONTENT_URI_TABLE,
-                            contents.toArray(new ContentValues[contents.size()]));
-                    Log.d(LOG_TAG, String.valueOf(effectedRows));
+                    ContentResolver resolver;
+                    try {
 
+
+                        resolver = getActivity().getContentResolver();
+                    } catch (Exception e) {
+                        resolver = null;
+                    }
+                    if (resolver != null) {
+
+                        int effectedRows = resolver.bulkInsert(MoviesContract.ReviewEntry.CONTENT_URI_TABLE,
+                                contents.toArray(new ContentValues[contents.size()]));
+                        Log.d(LOG_TAG, String.valueOf(effectedRows));
+                    }
+                    resolver = null;
                     movieReviews = (ArrayList<FetchMovieReviews.MovieReviews>) response.body().getResults();
                     if (movieReviews != null) {
                         reviewRecyclerAdapter.addAndClear(movieReviews);
@@ -303,6 +313,7 @@ public class MovieDetailsFragment extends Fragment {
                                 contents.toArray(new ContentValues[contents.size()]));
                         Log.d(LOG_TAG, String.valueOf(effectedRows));
                     }
+                    resolver = null;
                     movieTrailers = (ArrayList<FetchMovieTrailers.MovieTrailer>) response.body().getResults();
                     if (shareActionProvider != null && movieTrailers != null && !movieTrailers.isEmpty()) {
                         shareActionProvider.setShareIntent(createShareTrailerIntent());

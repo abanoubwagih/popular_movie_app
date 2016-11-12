@@ -10,6 +10,7 @@
         android:id="@+id/movie_imageView"
         android:layout_width="fill_parent"
         android:layout_height="250dp"
+        android:background="@drawable/background_selector"
         android:contentDescription="@string/movie_photo"
         android:minHeight="200dp"
         android:scaleType="fitXY"
