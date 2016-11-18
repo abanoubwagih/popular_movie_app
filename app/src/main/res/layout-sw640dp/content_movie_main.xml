@@ -10,14 +10,14 @@
         android:id="@+id/fragment_main"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_weight="1.5"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <FrameLayout
         android:id="@+id/fragment_details"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_weight="2"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     </FrameLayout>
