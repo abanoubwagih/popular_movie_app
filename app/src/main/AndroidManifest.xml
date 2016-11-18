@@ -27,7 +27,7 @@
         </activity>
         <activity
             android:name=".setting.SettingActivity"
-            android:parentActivityName=".MovieMainActivity"></activity>
+            android:parentActivityName=".MovieMainActivity" />
         <activity
             android:name=".movie.details.MovieDetailsActivity"
             android:label="@string/title_activity_details"

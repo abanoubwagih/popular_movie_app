@@ -8,10 +8,6 @@ import com.gmail.abanoub.mymal_popularmovies.data.provider.MoviesContract;
 
 import java.util.List;
 
-/**
- * Created by Abanoub on 24/10/2016.
- */
-
 public class FetchMovieReviews implements Parcelable {
 
     public static final Creator<FetchMovieReviews> CREATOR = new Creator<FetchMovieReviews>() {

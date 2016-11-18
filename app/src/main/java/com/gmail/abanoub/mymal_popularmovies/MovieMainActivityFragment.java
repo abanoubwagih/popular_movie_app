@@ -43,15 +43,24 @@ public class MovieMainActivityFragment extends Fragment implements LoaderManager
 
     private static final String LOG_TAG = MovieMainActivityFragment.class.getSimpleName();
     private static final int MOVIE_LOADER_CALLBACK = 5151;
+    private static boolean becauseUpdated = false;
     @BindView(R.id.grid_movies_list)
     GridView gridView;
     int sortType;
+    Uri handleDeleteReviewAndTrailer = null;
     private IActivityFragmentCallBack iActivityFragmentCallBack;
     private Context context;
     private MovieCursorAdapter movieCursorAdapter;
     private int itemPositionIndex;
-
     public MovieMainActivityFragment() {
+    }
+
+    public static boolean isBecauseUpdated() {
+        return becauseUpdated;
+    }
+
+    public static void setBecauseUpdated(boolean becauseUpdated) {
+        MovieMainActivityFragment.becauseUpdated = becauseUpdated;
     }
 
     @OnItemClick(R.id.grid_movies_list)
@@ -104,7 +113,7 @@ public class MovieMainActivityFragment extends Fragment implements LoaderManager
         View root = inflater.inflate(R.layout.fragment_movie_main, container, false);
         ButterKnife.bind(this, root);
 
-        movieCursorAdapter = new MovieCursorAdapter(context, null);
+        movieCursorAdapter = new MovieCursorAdapter(context);
         gridView.setAdapter(movieCursorAdapter);
         if (itemPositionIndex != 0) gridView.setSelection(itemPositionIndex);
 
@@ -124,15 +133,18 @@ public class MovieMainActivityFragment extends Fragment implements LoaderManager
         if (!isConnected()) {
             Toast.makeText(context, "no internet connection", Toast.LENGTH_LONG).show();
             getLoaderManager().restartLoader(MOVIE_LOADER_CALLBACK, null, MovieMainActivityFragment.this);
+            return;
         }
         String SORT_TYPE = getSortType();
-        sortType = (SORT_TYPE.equals(getString(R.string.sort_popular))) ?
-                MoviesContract.MovieEntry.MOVIE_SORT_TYPE_POPULAR : MoviesContract.MovieEntry.MOVIE_SORT_TYPE_Rate;
-        if (SORT_TYPE.equals(getString(R.string.sort_popular)))
+
+        if (SORT_TYPE.equals(getString(R.string.sort_popular))) {
             sortType = MoviesContract.MovieEntry.MOVIE_SORT_TYPE_POPULAR;
-        else if (SORT_TYPE.equals(getString(R.string.sort_rate)))
+            handleDeleteReviewAndTrailer = MoviesContract.MovieEntry.CONTENT_URI_POPULAR_MOVIES;
+        } else if (SORT_TYPE.equals(getString(R.string.sort_rate))) {
+
             sortType = MoviesContract.MovieEntry.MOVIE_SORT_TYPE_Rate;
-        else {
+            handleDeleteReviewAndTrailer = MoviesContract.MovieEntry.CONTENT_URI_RATE_MOVIE;
+        } else {
             getLoaderManager().restartLoader(MOVIE_LOADER_CALLBACK, null, MovieMainActivityFragment.this);
             return;
         }
@@ -154,15 +166,19 @@ public class MovieMainActivityFragment extends Fragment implements LoaderManager
                 ContentResolver resolver = context.getContentResolver();
                 ArrayList<ContentValues> contents = MoviesContract.getMoviesContentValues(response.body(), sortType);
 
-                int effectedRows = resolver.bulkInsert(MoviesContract.MovieEntry.CONTENT_URI_TABLE,
+                //TODO DElETE OLD RECORD
+                if (handleDeleteReviewAndTrailer != null && !becauseUpdated) {
+                    resolver.delete(handleDeleteReviewAndTrailer, null, null);
+                }
+                resolver.bulkInsert(MoviesContract.MovieEntry.CONTENT_URI_TABLE,
                         contents.toArray(new ContentValues[contents.size()]));
-                Log.d(LOG_TAG, String.valueOf(effectedRows));
-
+                becauseUpdated = false;
             }
 
             @Override
             public void onFailure(Call<FetchedMoviesList> call, Throwable t) {
                 Log.e(LOG_TAG, "retrofit error", t);
+
             }
         });
 

@@ -26,6 +26,6 @@
         android:padding="10dp"
         android:textAppearance="?android:textAppearanceSmall"
         android:textColor="@color/secondary_text"
-        tools:text="I was a supporter of the first Jack Reacher film, having never developed a literary attachment to the eponymous hero and thus being perfectly happy to see him misinterpreted (apparently) by the diminutive Tom Cruise. But this sequel, adapted from another of Lee Child's bestselling books, has the misfortune to bear a title which may provide its epitaph. Reacher does come back, on a similar mission to last time: that is, to clear someone's name and run around (he does a lot of running) dodging those who would rather see him hand-cuffed and out of their ill-intentioned way." />
+        tools:text="I was a supporter of the first Jack  film, having never developed a literary attachment to the eponymous hero and thus being perfectly happy to see him misinterpreted (apparently) by the diminutive Tom Cruise. But this sequel, adapted from another of Lee Child's bestselling books, has the misfortune to bear a title which may provide its epitaph. Reacher does come back, on a similar mission to last time: that is, to clear someone's name and run around (he does a lot of running) dodging those who would rather see him hand-cuffed and out of their ill-intentioned way." />
 </android.support.v7.widget.CardView>
 

@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gmail.abanoub.mymal_popularmovies.BuildConfig;
+import com.gmail.abanoub.mymal_popularmovies.MovieMainActivityFragment;
 import com.gmail.abanoub.mymal_popularmovies.R;
 import com.gmail.abanoub.mymal_popularmovies.data.fetched.FetchMovieReviews;
 import com.gmail.abanoub.mymal_popularmovies.data.fetched.FetchMovieTrailers;
@@ -123,7 +124,7 @@ public class MovieDetailsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(LOG_TAG, "onCreate");
+
 
         if (savedInstanceState == null || !savedInstanceState.containsKey(getString(R.string.save_instance_movieParam))) {
             if (getArguments() != null) {
@@ -146,14 +147,14 @@ public class MovieDetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        Log.d(LOG_TAG, "onCreateView");
+
         getActivity().setTitle(movieParam.getTitle());
 
         if (getActivity().findViewById(R.id.movie_backdrop_image) != null) {
 
             ImageView backdrop = (ImageView) getActivity().findViewById(R.id.movie_backdrop_image);
-            String imagePathdrob = context.getString(R.string.BASE_URL_FETCH_BACKDROP) + movieParam.getPoster_path();
-            Picasso.with(getActivity()).load(imagePathdrob).into(backdrop);
+            String imagePathDrob = context.getString(R.string.BASE_URL_FETCH_BACKDROP) + movieParam.getPoster_path();
+            Picasso.with(getActivity()).load(imagePathDrob).into(backdrop);
         }
 
         View root = inflater.inflate(R.layout.fragment_movie_details, container, false);
@@ -206,7 +207,7 @@ public class MovieDetailsFragment extends Fragment {
             }
         } catch (Exception e) {
             Log.e(LOG_TAG, "error ", e);
-            Toast.makeText(context, "error in retrive review data " + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "error in retrieve review data " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
         try {
 
@@ -233,11 +234,11 @@ public class MovieDetailsFragment extends Fragment {
                     }
                     if (resolver != null) {
 
-                        int effectedRows = resolver.bulkInsert(MoviesContract.ReviewEntry.CONTENT_URI_TABLE,
+                        resolver.bulkInsert(MoviesContract.ReviewEntry.CONTENT_URI_TABLE,
                                 contents.toArray(new ContentValues[contents.size()]));
-                        Log.d(LOG_TAG, String.valueOf(effectedRows));
+
                     }
-                    resolver = null;
+
                     movieReviews = (ArrayList<FetchMovieReviews.MovieReviews>) response.body().getResults();
                     if (movieReviews != null) {
                         reviewRecyclerAdapter.addAndClear(movieReviews);
@@ -247,6 +248,7 @@ public class MovieDetailsFragment extends Fragment {
                 @Override
                 public void onFailure(Call<FetchMovieReviews> call, Throwable t) {
                     Log.e(LOG_TAG, "error in fetch review  get MovieReviews ", t);
+                    updateMovieReview();
                 }
             });
         } catch (Exception e) {
@@ -259,14 +261,14 @@ public class MovieDetailsFragment extends Fragment {
     }
 
     private ArrayList<FetchMovieReviews.MovieReviews> getMovieReviewsFromCursor(Cursor cursor) {
-        ArrayList<FetchMovieReviews.MovieReviews> movieReviewses = new ArrayList<>();
+        ArrayList<FetchMovieReviews.MovieReviews> movieReviews = new ArrayList<>();
 
         while (cursor.moveToNext()) {
 
-            movieReviewses.add(new FetchMovieReviews.MovieReviews(cursor));
+            movieReviews.add(new FetchMovieReviews.MovieReviews(cursor));
         }
 
-        return movieReviewses;
+        return movieReviews;
     }
 
     private void updateMovieTrailer() {
@@ -284,7 +286,7 @@ public class MovieDetailsFragment extends Fragment {
             }
         } catch (Exception e) {
             Log.e(LOG_TAG, "error ", e);
-            Toast.makeText(context, "error in retrive trailer data " + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "error in retrieve trailer data " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
         try {
             Retrofit retrofit = new Retrofit.Builder()
@@ -309,11 +311,11 @@ public class MovieDetailsFragment extends Fragment {
                     }
                     if (resolver != null) {
 
-                        int effectedRows = resolver.bulkInsert(MoviesContract.TrailerEntry.CONTENT_URI_TABLE,
+                        resolver.bulkInsert(MoviesContract.TrailerEntry.CONTENT_URI_TABLE,
                                 contents.toArray(new ContentValues[contents.size()]));
-                        Log.d(LOG_TAG, String.valueOf(effectedRows));
+
                     }
-                    resolver = null;
+
                     movieTrailers = (ArrayList<FetchMovieTrailers.MovieTrailer>) response.body().getResults();
                     if (shareActionProvider != null && movieTrailers != null && !movieTrailers.isEmpty()) {
                         shareActionProvider.setShareIntent(createShareTrailerIntent());
@@ -326,7 +328,8 @@ public class MovieDetailsFragment extends Fragment {
 
                 @Override
                 public void onFailure(Call<FetchMovieTrailers> call, Throwable t) {
-
+                    Log.e(LOG_TAG, "error in Fetch Trailer  get MovieTrailers ", t);
+                    updateMovieTrailer();
                 }
             });
         } catch (Exception e) {
@@ -356,14 +359,14 @@ public class MovieDetailsFragment extends Fragment {
             } else {
                 movie_favourite.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
             }
-
+            MovieMainActivityFragment.setBecauseUpdated(true);
             Uri uri = MoviesContract.appendUriWithId(MoviesContract.MovieEntry.CONTENT_URI_TABLE, movieParam.getId());
 
             ContentValues contentValues = new ContentValues();
             contentValues.put(MoviesContract.MovieEntry.COLUMN_MOVIE_FAVOURITE, !movieParam.isFavourite());
 
-            int effective = context.getContentResolver().update(uri, contentValues, null, null);
-            Log.d(LOG_TAG, "update " + effective);
+            context.getContentResolver().update(uri, contentValues, null, null);
+
 
             movieParam.setFavourite(!movieParam.isFavourite());
 
@@ -375,7 +378,7 @@ public class MovieDetailsFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        Log.d(LOG_TAG, "onSaveInstanceState");
+
         outState.putParcelable(getString(R.string.save_instance_movieParam), movieParam);
         outState.putParcelableArrayList(getString(R.string.save_instance_movieTrailers), movieTrailers);
         outState.putParcelableArrayList(getString(R.string.save_instance_movieReviews), movieReviews);
@@ -401,7 +404,7 @@ public class MovieDetailsFragment extends Fragment {
             }
 
         } catch (Exception e) {
-            Log.e(LOG_TAG, "wwwwwwwwww" + e.getMessage());
+            Log.e(LOG_TAG, "shareActionProvider error " + e.getMessage());
         }
 
     }

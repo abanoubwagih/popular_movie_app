@@ -28,11 +28,7 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    //okhttp api
-    // gson api
-    //picasso
-    // butter knife
-    // butter knife
+
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
     compile 'com.solidfire.code.gson:gson:2.6.2'
     compile 'com.squareup.picasso:picasso:2.5.2'

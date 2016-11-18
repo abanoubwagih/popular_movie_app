@@ -8,13 +8,12 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/cardview_shadow_end_color"
         android:orientation="vertical"
         android:padding="16dp">
 
         <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <ImageView
@@ -25,11 +24,11 @@
                 android:layout_weight="3"
                 android:elevation="2dp"
                 android:scaleType="fitXY"
-                tools:src="@color/placeHolder" />
+                tools:src="@color/icons" />
 
             <LinearLayout
                 android:layout_width="0dp"
-            android:layout_height="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|right"
                 android:layout_weight="2"
                 android:orientation="vertical">
@@ -59,38 +58,38 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="right"
                     android:layout_margin="@dimen/detail_title_bottom_margin"
                     android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/movie_vote_average"
-                    style="?android:attr/textAppearanceLarge"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginBottom="@dimen/detail_title_bottom_margin"
-                    android:layout_marginLeft="@dimen/detail_title_left_padding"
-                    android:textColor="@color/colorPrimary"
-                    android:textIsSelectable="true"
-                    android:textStyle="bold|italic"
-                    tools:ignore="RtlHardcoded"
-                    tools:text="7" />
+                    <TextView
+                        android:id="@+id/movie_vote_average"
+                        style="?android:attr/textAppearanceLarge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="@dimen/detail_title_bottom_margin"
+                        android:layout_marginLeft="@dimen/detail_title_left_padding"
+                        android:textColor="@color/colorPrimary"
+                        android:textIsSelectable="true"
+                        android:textStyle="bold|italic"
+                        tools:ignore="RtlHardcoded"
+                        tools:text="7" />
 
-                <TextView
-                    style="?android:attr/textAppearanceSmall"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginBottom="@dimen/detail_title_bottom_margin"
-                    android:text="@string/_10"
-                    android:textIsSelectable="true" />
+                    <TextView
+                        style="?android:attr/textAppearanceSmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="@dimen/detail_title_bottom_margin"
+                        android:text="@string/_10"
+                        android:textIsSelectable="true" />
 
                     <ImageView
                         android:id="@+id/movie_favourite"
                         android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:elevation="20dp"
                         android:tint="@color/colorPrimary"
@@ -98,8 +97,8 @@
                         tools:ignore="ContentDescription" />
 
 
+                </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
@@ -109,7 +108,7 @@
             <TextView
                 android:id="@+id/movie_overview"
                 android:layout_width="0dp"
-            android:layout_height="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="left|center_vertical"
                 android:layout_weight="7"
                 android:paddingTop="10dp"
@@ -118,7 +117,7 @@
 
             <ImageView
                 android:layout_width="0dp"
-            android:layout_height="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="right|center_vertical"
                 android:layout_margin="8dp"
                 android:layout_weight="1"

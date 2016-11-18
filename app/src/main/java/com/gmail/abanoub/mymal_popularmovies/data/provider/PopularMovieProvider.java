@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.gmail.abanoub.mymal_popularmovies.data.provider.MoviesContract.MovieEntry;
 import com.gmail.abanoub.mymal_popularmovies.data.provider.MoviesContract.ReviewEntry;
@@ -130,6 +131,9 @@ public class PopularMovieProvider extends ContentProvider {
         SQLiteDatabase sqLiteDatabase = movieDbHelper.getWritableDatabase();
         int id = -1;
 
+        String handleDeleteReview;
+        String handleDeleteTrailer;
+
         switch (match) {
             case ReviewEntry.CODE_TABLE_ID:
                 selection = ReviewEntry.COLUMN_REVIEW_MOVIE_ID + " = ? ";
@@ -141,13 +145,62 @@ public class PopularMovieProvider extends ContentProvider {
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 id = sqLiteDatabase.delete(TrailerEntry.TABLE_NAME, selection, selectionArgs);
                 break;
+            case MovieEntry.CODE_TABLE:
+                // handle delete from review and trailer table
+                handleDeleteReview = "DELETE FROM " + ReviewEntry.TABLE_NAME + " WHERE " + ReviewEntry.COLUMN_REVIEW_MOVIE_ID
+                        + " in ( SELECT " + MovieEntry.COLUMN_MOVIE_ID + " FROM " + MovieEntry.TABLE_NAME + " where "
+                        + MovieEntry.COLUMN_MOVIE_FAVOURITE + " = " + MovieEntry.MOVIE_NOT_FAVOURITE + " ) ";
+
+                handleDeleteTrailer = "DELETE FROM " + TrailerEntry.TABLE_NAME + " WHERE " + TrailerEntry.COLUMN_TRAILER_MOVIE_ID
+                        + " in ( SELECT " + MovieEntry.COLUMN_MOVIE_ID + " FROM " + MovieEntry.TABLE_NAME + " where "
+                        + MovieEntry.COLUMN_MOVIE_FAVOURITE + " = " + MovieEntry.MOVIE_NOT_FAVOURITE + " ) ";
+
+                Log.e(LOG_TAG, "delete sql review " + handleDeleteReview);
+                Log.e(LOG_TAG, "delete sql trailer " + handleDeleteTrailer);
+
+                sqLiteDatabase.execSQL(handleDeleteReview);
+                sqLiteDatabase.execSQL(handleDeleteTrailer);
+                selection = " " + MovieEntry.COLUMN_MOVIE_FAVOURITE + " = " + MovieEntry.MOVIE_NOT_FAVOURITE + " ";
+
+                id = sqLiteDatabase.delete(MovieEntry.TABLE_NAME, selection, selectionArgs);
+                break;
             case MovieEntry.CODE_TABLE_POPULAR:
-                selection = MovieEntry.COLUMN_MOVIE_SORT_BY + " = ? ";
+
+                // handle delete from review and trailer table
+                handleDeleteReview = "DELETE FROM " + ReviewEntry.TABLE_NAME + " WHERE " + ReviewEntry.COLUMN_REVIEW_MOVIE_ID + " " +
+                        "in ( SELECT " + MovieEntry.COLUMN_MOVIE_ID + " FROM " + MovieEntry.TABLE_NAME + " where " +
+                        "(" + MovieEntry.COLUMN_MOVIE_SORT_BY + " = " + String.valueOf(MovieEntry.MOVIE_SORT_TYPE_POPULAR) + ") " +
+                        "AND ( " + MovieEntry.COLUMN_MOVIE_FAVOURITE + " = " + MovieEntry.MOVIE_NOT_FAVOURITE + " ) ) ";
+
+                handleDeleteTrailer = "DELETE FROM " + TrailerEntry.TABLE_NAME + " WHERE " + TrailerEntry.COLUMN_TRAILER_MOVIE_ID + " " +
+                        "in ( SELECT " + MovieEntry.COLUMN_MOVIE_ID + " FROM " + MovieEntry.TABLE_NAME + " where " +
+                        "(" + MovieEntry.COLUMN_MOVIE_SORT_BY + " = " + String.valueOf(MovieEntry.MOVIE_SORT_TYPE_POPULAR) + ") " +
+                        "AND ( " + MovieEntry.COLUMN_MOVIE_FAVOURITE + " = " + MovieEntry.MOVIE_NOT_FAVOURITE + " ) ) ";
+
+                sqLiteDatabase.execSQL(handleDeleteReview);
+                sqLiteDatabase.execSQL(handleDeleteTrailer);
+
+                selection = MovieEntry.COLUMN_MOVIE_SORT_BY + " = ? AND ( " + MovieEntry.COLUMN_MOVIE_FAVOURITE + " = " + MovieEntry.MOVIE_NOT_FAVOURITE + ")";
                 selectionArgs = new String[]{String.valueOf(MovieEntry.MOVIE_SORT_TYPE_POPULAR)};
                 id = sqLiteDatabase.delete(MovieEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             case MovieEntry.CODE_TABLE_RATE:
-                selection = MovieEntry.COLUMN_MOVIE_SORT_BY + " = ? ";
+                // handle delete from review and trailer table
+                handleDeleteReview = "DELETE FROM " + ReviewEntry.TABLE_NAME + " WHERE " + ReviewEntry.COLUMN_REVIEW_MOVIE_ID + " " +
+                        "in ( SELECT " + MovieEntry.COLUMN_MOVIE_ID + " FROM " + MovieEntry.TABLE_NAME + " where " +
+                        "(" + MovieEntry.COLUMN_MOVIE_SORT_BY + " = " + String.valueOf(MovieEntry.MOVIE_SORT_TYPE_Rate) + ") " +
+                        "AND ( " + MovieEntry.COLUMN_MOVIE_FAVOURITE + " = " + MovieEntry.MOVIE_NOT_FAVOURITE + " ) ) ";
+
+                handleDeleteTrailer = "DELETE FROM " + ReviewEntry.TABLE_NAME + " WHERE " + ReviewEntry.COLUMN_REVIEW_MOVIE_ID + " " +
+                        "in ( SELECT " + MovieEntry.COLUMN_MOVIE_ID + " FROM " + MovieEntry.TABLE_NAME + " where " +
+                        "(" + MovieEntry.COLUMN_MOVIE_SORT_BY + " = " + String.valueOf(MovieEntry.MOVIE_SORT_TYPE_Rate) + ") " +
+                        "AND ( " + MovieEntry.COLUMN_MOVIE_FAVOURITE + " = " + MovieEntry.MOVIE_NOT_FAVOURITE + " ) ) ";
+
+
+                sqLiteDatabase.execSQL(handleDeleteReview);
+                sqLiteDatabase.execSQL(handleDeleteTrailer);
+
+                selection = MovieEntry.COLUMN_MOVIE_SORT_BY + " = ? AND ( " + MovieEntry.COLUMN_MOVIE_FAVOURITE + " = " + MovieEntry.MOVIE_NOT_FAVOURITE + ")";
                 selectionArgs = new String[]{String.valueOf(MovieEntry.MOVIE_SORT_TYPE_Rate)};
                 id = sqLiteDatabase.delete(MovieEntry.TABLE_NAME, selection, selectionArgs);
                 break;

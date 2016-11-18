@@ -9,10 +9,6 @@ import com.gmail.abanoub.mymal_popularmovies.data.provider.MoviesContract;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Abanoub on 24/10/2016.
- */
-
 public class FetchedMoviesList implements Parcelable{
 
     public static final Creator<FetchedMoviesList> CREATOR = new Creator<FetchedMoviesList>() {

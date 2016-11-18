@@ -21,51 +21,50 @@ import butterknife.ButterKnife;
 
 public class ReviewRecyclerAdapter extends RecyclerView.Adapter<ReviewRecyclerAdapter.ViewHolder> {
 
-    private List<FetchMovieReviews.MovieReviews> movieReviewses;
+    private List<FetchMovieReviews.MovieReviews> movieReviews;
     private Context context;
 
     public ReviewRecyclerAdapter(Context context, List<FetchMovieReviews.MovieReviews> objects) {
 
         this.context = context;
-        this.movieReviewses = objects;
+        this.movieReviews = objects;
 
     }
 
     public String getItemIdString(int position) {
 
-        return movieReviewses.get(position).getId();
+        return movieReviews.get(position).getId();
 
     }
 
     public void addAndClear(List<FetchMovieReviews.MovieReviews> objects) {
 
-        if (movieReviewses != null) {
-            movieReviewses.clear();
+        if (movieReviews != null) {
+            movieReviews.clear();
         } else {
-            movieReviewses = new ArrayList<>();
+            movieReviews = new ArrayList<>();
         }
 
-        movieReviewses.addAll(objects);
+        movieReviews.addAll(objects);
         notifyDataSetChanged();
 
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        ViewHolder viewHolder = new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_review, parent, false));
-        return viewHolder;
+        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_review, parent, false));
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
 
-        holder.review_author.setText(movieReviewses.get(position).getAuthor());
-        holder.review_content.setText(movieReviewses.get(position).getContent());
+        holder.review_author.setText(movieReviews.get(position).getAuthor());
+        holder.review_content.setText(movieReviews.get(position).getContent());
     }
 
     @Override
     public int getItemCount() {
-        return movieReviewses.size();
+        return movieReviews.size();
     }
 
 
@@ -89,7 +88,7 @@ public class ReviewRecyclerAdapter extends RecyclerView.Adapter<ReviewRecyclerAd
                 public void onClick(View view) {
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-                    intent.setData(Uri.parse(movieReviewses.get(getAdapterPosition()).getUrl()));
+                    intent.setData(Uri.parse(movieReviews.get(getAdapterPosition()).getUrl()));
                     context.startActivity(intent);
                 }
             });

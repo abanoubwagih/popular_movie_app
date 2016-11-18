@@ -4,10 +4,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-/**
- * Created by Abanoub on 25/10/2016.
- */
-
 public class MovieDbHelper extends SQLiteOpenHelper {
 
     public static final int MOVIE_DATABASE_VERSION = 1;

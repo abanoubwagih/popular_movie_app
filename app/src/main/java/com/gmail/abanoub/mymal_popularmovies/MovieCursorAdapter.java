@@ -18,8 +18,8 @@ import butterknife.ButterKnife;
 
 
 public class MovieCursorAdapter extends CursorAdapter {
-    public MovieCursorAdapter(Context context, Cursor c) {
-        super(context, c);
+    public MovieCursorAdapter(Context context) {
+        super(context, null);
     }
 
     @Override
