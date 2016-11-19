@@ -154,13 +154,13 @@ public class MovieDetailsFragment extends Fragment {
 
             ImageView backdrop = (ImageView) getActivity().findViewById(R.id.movie_backdrop_image);
             String imagePathDrob = context.getString(R.string.BASE_URL_FETCH_BACKDROP) + movieParam.getPoster_path();
-            Picasso.with(getActivity()).load(imagePathDrob).into(backdrop);
+            Picasso.with(getActivity()).load(imagePathDrob).placeholder(R.drawable.user_placeholder).error(R.drawable.user_placeholder_error).into(backdrop);
         }
 
         View root = inflater.inflate(R.layout.fragment_movie_details, container, false);
         ButterKnife.bind(this, root);
         String imagePath = context.getString(R.string.BASE_URL_FETCH_POSTER) + movieParam.getPoster_path();
-        Picasso.with(context).load(imagePath).into(movie_poster);
+        Picasso.with(context).load(imagePath).placeholder(R.drawable.user_placeholder).error(R.drawable.user_placeholder_error).into(movie_poster);
         movie_title.setText(movieParam.getTitle());
         movie_overview.setText(movieParam.getOverview());
         movie_release_date.setText(movieParam.getRelease_date());

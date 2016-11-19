@@ -42,7 +42,7 @@ public class MovieCursorAdapter extends CursorAdapter {
         String imagePath = context.getString(R.string.BASE_URL_FETCH_POSTER)
                 + cursor.getString(cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_MOVIE_POSTER_PATH));
         holder.movieTitle.setText(title);
-        Picasso.with(context).load(imagePath).into(holder.moviePoster);
+        Picasso.with(context).load(imagePath).placeholder(R.drawable.user_placeholder).error(R.drawable.user_placeholder_error).into(holder.moviePoster);
     }
 
     class ViewHolder {

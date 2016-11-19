@@ -41,7 +41,7 @@ public class TrailerRecyclerAdapter extends RecyclerView.Adapter<TrailerRecycler
 
 
         String thumbnailPaths = String.format(context.getString(R.string.BASE_URL_thumbnail_TRAILER), movieTrailers.get(position).getKey());
-        Picasso.with(context).load(thumbnailPaths).into(holder.trailer_thumbnail_image);
+        Picasso.with(context).load(thumbnailPaths).placeholder(R.drawable.user_placeholder).error(R.drawable.user_placeholder_error).into(holder.trailer_thumbnail_image);
 
     }
 
